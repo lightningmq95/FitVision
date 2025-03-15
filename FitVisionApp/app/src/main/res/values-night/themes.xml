@@ -2,7 +2,6 @@
     <!-- Base application theme for dark mode -->
     <style name="Base.Theme.FitVisionApp" parent="Theme.Material3.DayNight">
         <!-- Ensure ActionBar is available -->
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
     </style>
+    <style name="Theme.FitVisionApp" parent="Base.Theme.FitVisionApp" />
 </resources>
