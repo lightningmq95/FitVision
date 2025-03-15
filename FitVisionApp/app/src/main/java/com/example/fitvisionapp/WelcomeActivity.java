@@ -5,9 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.EditText;
+import android.graphics.Color;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -17,8 +23,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class WelcomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private TextView welcomeTextView;
     private GoogleSignInClient mGoogleSignInClient;
+    private View parentLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,69 +34,67 @@ public class WelcomeActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Initialize views
-        welcomeTextView = findViewById(R.id.welcomeTextView);
-
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setDisplayShowHomeEnabled(false);
-            getSupportActionBar().show();
+
+        // Setup SearchView
+        SearchView searchView = findViewById(R.id.searchView);
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(Color.BLACK);
+        searchEditText.setCursorVisible(true);
+        searchEditText.setFocusable(true);
+        searchEditText.setFocusableInTouchMode(true);
+        searchView.setIconifiedByDefault(false); // Ensure it doesn't minimize
+
+        // Show temporary welcome message for 3 seconds
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String name = currentUser.getDisplayName();
+            showWelcomeMessage(name);
+        }
+    }
+
+
+    private void showWelcomeMessage(String name) {
+        if (name != null) {
+            Toast welcomeToast = Toast.makeText(this, "Welcome, " + name, Toast.LENGTH_SHORT);
+            welcomeToast.show();
+
+            new Handler().postDelayed(welcomeToast::cancel, 3000);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar
         getMenuInflater().inflate(R.menu.welcome_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_logout) {
+        if (item.getItemId() == R.id.action_logout) {
             signOut();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            updateUI(currentUser);
-        } else {
+        if (currentUser == null) {
             goToLogin();
-        }
-    }
-
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            String name = user.getDisplayName();
-            welcomeTextView.setText("Welcome, " + name);
         }
     }
 
     private void signOut() {
-        // Firebase sign out
         mAuth.signOut();
-
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
-            goToLogin();
-        });
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> goToLogin());
     }
 
     private void goToLogin() {
