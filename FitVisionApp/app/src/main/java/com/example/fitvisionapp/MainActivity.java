@@ -23,6 +23,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import androidx.appcompat.widget.SearchView;
+import android.widget.Toast;
+import android.widget.EditText;
+import android.graphics.Color;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Setup SearchView
+        setupSearchView();
+
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
@@ -70,6 +77,41 @@ public class MainActivity extends AppCompatActivity {
 
         // Update navigation header with user info
         updateNavigationHeader();
+    }
+
+    private void setupSearchView() {
+        androidx.appcompat.widget.SearchView searchView = binding.appBarMain.searchView;
+
+        // Set query text color to black
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        if (searchEditText != null) {
+            searchEditText.setTextColor(Color.BLACK);
+            searchEditText.setHintTextColor(Color.GRAY);
+        }
+
+        // Set query listener
+        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Handle search query submission
+                performSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Handle text changes (for real-time filtering)
+                return false;
+            }
+        });
+    }
+
+    private void performSearch(String query) {
+        // Implement your search functionality here
+        Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
+
+        // Example: You might want to navigate to a search results fragment/activity
+        // or filter content in the current fragment
     }
 
     private void updateNavigationHeader() {
@@ -140,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+//        getMenuInflater().inflate(R.menu.main, menu);
+        return false;
     }
 
     @Override

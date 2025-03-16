@@ -9,14 +9,28 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.FitVisionApp.AppBarOverlay">
+        style="@style/Theme.FitVisionApp.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.FitVisionApp.PopupOverlay" />
+            style="@style/Theme.FitVisionApp.PopupOverlay" />
+
+        <!-- Add SearchView below toolbar -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_search_background"
+            app:iconifiedByDefault="false"
+            app:queryHint="Search..."
+            android:theme="@style/SearchViewStyle"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
