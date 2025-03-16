@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "FitVisionApp"
 include(":app")
+ 
