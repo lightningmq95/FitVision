@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "280926592696",
+    "project_id": "fitvision-18299",
+    "storage_bucket": "fitvision-18299.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280926592696:android:934b9d3fe725f3191b1e4d",
+        "android_client_info": {
+          "package_name": "com.example.fitvisionapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280926592696-7oibqttla63i317fpbq8m8uo7dbldngt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fitvisionapp",
+            "certificate_hash": "a39101bda8a70e3dbbd76cbf5befaccacd56fe35"
+          }
+        },
+        {
+          "client_id": "280926592696-o2ngactvdla30l073j9e6m9thcms6p53.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoDFX3Ib_jDjg46fo4G3C3q4D93jZ5A6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280926592696-o2ngactvdla30l073j9e6m9thcms6p53.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

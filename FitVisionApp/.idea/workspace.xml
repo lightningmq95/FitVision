@@ -4,109 +4,46 @@
     <shared>
       <config />
     </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml">
+        <config>
+          <theme>@style/Theme.FitVisionApp</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <theme>@style/Theme.FitVisionApp</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/app_bar_main.xml">
+        <config>
+          <theme>@style/Theme.FitVisionApp.NoActionBar</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/content_main.xml">
+        <config>
+          <theme>@style/Theme.FitVisionApp</theme>
+        </config>
+      </layout>
+    </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="149415c7-decf-4011-a472-42f25d2c2e10" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/fitvisionapp/LoginActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/google-services.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/proguard-rules.pro" beforeDir="false" afterPath="$PROJECT_DIR$/app/proguard-rules.pro" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/example/fitvisionapp/ExampleInstrumentedTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/example/fitvisionapp/ExampleInstrumentedTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/fitvisionapp/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/fitvisionapp/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/fitvisionapp/WelcomeActivity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_foreground.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_welcome.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/welcome_menu.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-night/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-night/themes.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/backup_rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/backup_rules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/data_extraction_rules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/test/java/com/example/fitvisionapp/ExampleUnitTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/java/com/example/fitvisionapp/ExampleUnitTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/AndroidProjectSystem.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/deploymentTargetSelector.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/gradle.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/migrations.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/.idea/runConfigurations.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/androidTest/java/com/example/fitvisionapp/ExampleInstrumentedTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/MainActivity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/gallery/GalleryFragment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/gallery/GalleryViewModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/home/HomeFragment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/home/HomeViewModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/slideshow/SlideshowFragment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/java/com/example/fitvisionapp/ui/slideshow/SlideshowViewModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/ic_menu_camera.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/ic_menu_gallery.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/ic_menu_slideshow.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/drawable/side_nav_bar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/app_bar_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/content_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/fragment_gallery.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/fragment_home.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/fragment_slideshow.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/layout/nav_header_main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/menu/activity_main_drawer.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/menu/main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-hdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-mdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/navigation/mobile_navigation.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values-land/dimens.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values-night/themes.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values-w1240dp/dimens.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values-w600dp/dimens.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values/dimens.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values/strings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/values/themes.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/xml/backup_rules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/app/src/test/java/com/example/fitvisionapp/ExampleUnitTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradle.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradle/libs.versions.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../FitVisioon/FitVisionApp/settings.gradle.kts" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,6 +59,14 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="layoutResourceFile" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -130,21 +75,30 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2uOmPjBg9Ad04nWj1bXgCX9jfR9" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="android.template.111012789">
+      <recent name="com.example.fitvisionapp" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="FitVisionApp.app" />
