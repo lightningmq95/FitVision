@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -14,10 +15,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.bumptech.glide.Glide;
 import com.example.fitvisionapp.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +67,40 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up custom navigation item selection listener
         setupNavigationItemSelectedListener(navigationView);
+
+        // Update navigation header with user info
+        updateNavigationHeader();
+    }
+
+    private void updateNavigationHeader() {
+        NavigationView navigationView = binding.navView;
+        View headerView = navigationView.getHeaderView(0);
+
+        CircleImageView profileImageView = headerView.findViewById(R.id.nav_header_profile_image);
+        TextView nameTextView = headerView.findViewById(R.id.nav_header_name);
+        TextView emailTextView = headerView.findViewById(R.id.nav_header_email);
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            // Set user name
+            if (user.getDisplayName() != null) {
+                nameTextView.setText(user.getDisplayName());
+            }
+
+            // Set user email
+            if (user.getEmail() != null) {
+                emailTextView.setText(user.getEmail());
+            }
+
+            // Load profile image using Glide
+            if (user.getPhotoUrl() != null) {
+                Glide.with(this)
+                        .load(user.getPhotoUrl())
+                        .placeholder(R.mipmap.ic_launcher_round)
+                        .error(R.mipmap.ic_launcher_round)
+                        .into(profileImageView);
+            }
+        }
     }
 
     private void setupNavigationItemSelectedListener(NavigationView navigationView) {
