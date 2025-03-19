@@ -6,9 +6,18 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="apply_filter">Apply</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string-array name="clothing_filters">
+        <item>All</item>
+        <item>Shirt</item>
+        <item>Pants</item>
+        <item>Hat</item>
+        <item>Jacket</item>
+        <item>Shoes</item>
+        <item>Shorts</item>
+    </string-array>
 </resources>
