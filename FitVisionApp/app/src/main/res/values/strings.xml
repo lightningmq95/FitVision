@@ -11,6 +11,7 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="default_web_client_id">280926592696-o2ngactvdla30l073j9e6m9thcms6p53.apps.googleusercontent.com</string>
     <string-array name="clothing_filters">
         <item>All</item>
         <item>Shirt</item>
