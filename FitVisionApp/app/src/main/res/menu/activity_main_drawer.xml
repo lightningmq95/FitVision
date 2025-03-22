@@ -20,5 +20,12 @@
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="Logout" />
+
+        <item
+            android:id="@+id/nav_image_analysis"
+            android:icon="@drawable/ic_photo"
+            android:title="Image Analysis" />
+        <!-- pic to be added-->
+
     </group>
 </menu>

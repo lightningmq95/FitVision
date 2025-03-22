@@ -1,4 +1,5 @@
 package com.example.fitvisionapp;
+import com.example.fitvisionapp.ui.image.ImageAnalysisFragment;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -156,8 +157,15 @@ public class MainActivity extends AppCompatActivity {
                     logoutUser();
                     return true;
                 }
+                else if (id == R.id.nav_image_analysis) {  // Add this block
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.nav_host_fragment_content_main, new ImageAnalysisFragment())
+                            .commit();
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
 
-                // For other navigation items, use the default Navigation Component behavior
+                // Default Navigation Component behavior
                 boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
                 if (handled) {
                     binding.drawerLayout.closeDrawers();
@@ -166,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void logoutUser() {
         // Sign out from Firebase
