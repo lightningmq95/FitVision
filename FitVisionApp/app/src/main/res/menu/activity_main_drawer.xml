@@ -22,7 +22,7 @@
             android:title="Logout" />
 
         <item
-            android:id="@+id/nav_image_analysis"
+            android:id="@+id/imageAnalysisFragment"
             android:icon="@drawable/ic_photo"
             android:title="Image Analysis" />
         <!-- pic to be added-->
