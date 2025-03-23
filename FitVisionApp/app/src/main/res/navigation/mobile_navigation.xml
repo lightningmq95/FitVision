@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/imageAnalysisFragment"
-        android:name="com.example.fitvisionapp.ui.image.ImageAnalysisFragment"
+        android:name="com.example.fitvisionapp.ui.images.ImageAnalysisFragment"
         android:label="Image Analysis">
     </fragment>
 

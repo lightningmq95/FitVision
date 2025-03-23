@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,16 +11,6 @@
         android:orientation="vertical"
         android:padding="20dp"
         android:gravity="center">
-
-        <!-- Username Input -->
-        <EditText
-            android:id="@+id/usernameInput"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-        android:padding="12dp"
-        android:hint="Enter Username"
-        android:inputType="text"
-        android:layout_marginBottom="10dp"/>
 
         <!-- Number of Images Input -->
         <TextView
@@ -33,80 +24,54 @@
             android:id="@+id/numImagesInput"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-        android:padding="12dp"
-        android:inputType="number"
-        android:hint="Enter Number of Images"
-        android:layout_marginBottom="10dp"/>
+            android:padding="12dp"
+            android:inputType="number"
+            android:hint="Enter Number of Images"
+            android:layout_marginBottom="10dp"/>
 
         <!-- Upload Image Button -->
         <Button
             android:id="@+id/uploadButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload Image"
+            android:text="Upload Images"
             android:layout_marginTop="10dp"/>
 
-        <!--  Scrollable Layout for User Uploaded Image Previews -->
-        <ScrollView
+        <!-- 🔹 Horizontal Scroll for Uploaded Images -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginBottom="10dp"
-            android:contentDescription="Images Preview">
+            android:layout_marginBottom="10dp">
 
             <LinearLayout
                 android:id="@+id/imagePreviewLayout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"/>
-        </ScrollView>
+        </HorizontalScrollView>
 
-        <!--  Scrollable View for Backend Image Responses -->
-        <ScrollView
+        <!--  Backend Image Responses (Scrolls Horizontally) -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@android:color/darker_gray"
-            android:contentDescription="Images received from backend">
+            android:background="@android:color/darker_gray">
 
             <LinearLayout
                 android:id="@+id/backendImageLayout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-        </ScrollView>
+                android:orientation="horizontal"/>
+        </HorizontalScrollView>
 
-        <!-- Image Preview Box -->
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
-            android:background="@android:color/darker_gray"/>
-
-        <!-- Category Output -->
-        <TextView
-            android:id="@+id/categoryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Category: "
-            android:textSize="18sp"/>
-
-        <!-- Color Output -->
-        <TextView
-            android:id="@+id/colorTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Color: "
-            android:textSize="18sp"/>
-
-        <!-- Correct / Incorrect Buttons -->
+        <!--  Buttons for Correct / Incorrect -->
         <LinearLayout
+            android:id="@+id/correctIncorrectLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/correctButton"
@@ -122,7 +87,7 @@
                 android:layout_marginStart="10dp"/>
         </LinearLayout>
 
-        <!-- Clothing Type Dropdown (Hidden by Default) -->
+        <!--  Clothing Type Dropdown (Hidden by Default) -->
         <TextView
             android:id="@+id/clothingTypeLabel"
             android:layout_width="wrap_content"
@@ -138,7 +103,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
-        <!-- Color Dropdown (Hidden by Default) -->
+        <!--  Color Dropdown (Hidden by Default) -->
         <TextView
             android:id="@+id/colorLabel"
             android:layout_width="wrap_content"
@@ -154,27 +119,21 @@
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
-        <!-- Confirm Correction Button (Hidden by default) -->
+        <!--  Confirm Correction Button (Hidden by Default) -->
         <Button
             android:id="@+id/confirmCorrectionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirm Correction"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_marginTop="10dp"/>
 
         <!-- Submit Button -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="10dp">
-
-            <Button
-                android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Submit"/>
-        </LinearLayout>
-
+            android:text="Submit"
+            android:layout_marginTop="10dp"/>
     </LinearLayout>
 </ScrollView>
