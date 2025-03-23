@@ -1,6 +1,8 @@
 package com.example.fitvisionapp;
+import com.example.fitvisionapp.ui.images.ImageAnalysisFragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -39,6 +41,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        // Bypass login by setting user as "logged in"
+//        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+//        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+//
+//        if (!isLoggedIn) {
+//            SharedPreferences.Editor editor = prefs.edit();
+//            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
+//            editor.apply();
+//        }
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
@@ -62,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        // menu should be considered as top-level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.imageAnalysisFragment)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -109,9 +121,6 @@ public class MainActivity extends AppCompatActivity {
     private void performSearch(String query) {
         // Implement your search functionality here
         Toast.makeText(this, "Searching for: " + query, Toast.LENGTH_SHORT).show();
-
-        // Example: You might want to navigate to a search results fragment/activity
-        // or filter content in the current fragment
     }
 
     private void updateNavigationHeader() {
@@ -156,8 +165,13 @@ public class MainActivity extends AppCompatActivity {
                     logoutUser();
                     return true;
                 }
+                else if (id == R.id.imageAnalysisFragment) {  // fixed Navigation
+                    navController.navigate(R.id.imageAnalysisFragment);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
 
-                // For other navigation items, use the default Navigation Component behavior
+                // Default Navigation Component behavior
                 boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
                 if (handled) {
                     binding.drawerLayout.closeDrawers();

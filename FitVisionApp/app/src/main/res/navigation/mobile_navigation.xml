@@ -22,4 +22,11 @@
         android:name="com.example.fitvisionapp.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/imageAnalysisFragment"
+        android:name="com.example.fitvisionapp.ui.images.ImageAnalysisFragment"
+        android:label="Image Analysis">
+    </fragment>
+
 </navigation>

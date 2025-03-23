@@ -21,4 +21,24 @@
         <item>Shoes</item>
         <item>Shorts</item>
     </string-array>
+
+        <string-array name="clothing_types">
+            <item>Shirt</item>
+            <item>Pant</item>
+            <item>Jeans</item>
+            <item>Jacket</item>
+            <item>Dress</item>
+        </string-array>
+
+        <string-array name="color_options">
+            <item>Red</item>
+            <item>Blue</item>
+            <item>Green</item>
+            <item>Black</item>
+            <item>White</item>
+            <item>Yellow</item>
+        </string-array>
+
+
+
 </resources>
