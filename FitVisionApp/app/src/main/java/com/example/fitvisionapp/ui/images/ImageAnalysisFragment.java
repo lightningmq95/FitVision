@@ -114,38 +114,76 @@ public class ImageAnalysisFragment extends Fragment {
         }
     }
 
+//    private void sendImagesToBackend() {
+//        Executors.newSingleThreadExecutor().execute(() -> {  // Run in background
+//            List<MultipartBody.Part> imageParts = new ArrayList<>();
+//            for (Uri uri : imageUris) {
+//                File file = new File(uri.getPath());
+//                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+//                MultipartBody.Part imagePart = MultipartBody.Part.createFormData("images", file.getName(), requestBody);
+//                imageParts.add(imagePart);
+//            }
+//
+//            apiService.analyzeImages(imageParts).enqueue(new Callback<List<Map<String, String>>>() {
+//                @Override
+//                public void onResponse(Call<List<Map<String, String>>> call, Response<List<Map<String, String>>> response) {
+//                    if (response.isSuccessful() && response.body() != null) {
+//                        requireActivity().runOnUiThread(() -> {
+//                            backendImageLayout.removeAllViews();
+//                            for (Map<String, String> imageResponse : response.body()) {
+//                                displayImageResult(imageResponse);
+//                            }
+//                        });
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<List<Map<String, String>>> call, Throwable t) {
+//                    requireActivity().runOnUiThread(() ->
+//                            Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show()
+//                    );
+//                }
+//            });
+//        });
+//    }
+
     private void sendImagesToBackend() {
-        Executors.newSingleThreadExecutor().execute(() -> {  // Run in background
-            List<MultipartBody.Part> imageParts = new ArrayList<>();
-            for (Uri uri : imageUris) {
-                File file = new File(uri.getPath());
-                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-                MultipartBody.Part imagePart = MultipartBody.Part.createFormData("images", file.getName(), requestBody);
-                imageParts.add(imagePart);
+        String testCategory = "Jacket";  // Hardcoded test data
+        String testColor = "Blue";  // Hardcoded test data
+
+        Map<String, String> testData = new HashMap<>();
+        testData.put("category", testCategory);
+        testData.put("color", testColor);
+
+        apiService.analyzeTextData(testData).enqueue(new Callback<Map<String, String>>() {
+            @Override
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        backendImageLayout.removeAllViews();
+
+                        // Display Mock Data
+                        TextView categoryView = new TextView(getActivity());
+                        categoryView.setText("Category: " + response.body().get("category"));
+
+                        TextView colorView = new TextView(getActivity());
+                        colorView.setText("Color: " + response.body().get("color"));
+
+                        backendImageLayout.addView(categoryView);
+                        backendImageLayout.addView(colorView);
+                    });
+                }
             }
 
-            apiService.analyzeImages(imageParts).enqueue(new Callback<List<Map<String, String>>>() {
-                @Override
-                public void onResponse(Call<List<Map<String, String>>> call, Response<List<Map<String, String>>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        requireActivity().runOnUiThread(() -> {
-                            backendImageLayout.removeAllViews();
-                            for (Map<String, String> imageResponse : response.body()) {
-                                displayImageResult(imageResponse);
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Map<String, String>>> call, Throwable t) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-                }
-            });
+            @Override
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
         });
     }
+
 
     private void displayImageResult(Map<String, String> imageResponse) {
         String imageName = imageResponse.get("image_name");
@@ -176,3 +214,4 @@ public class ImageAnalysisFragment extends Fragment {
         backendImageLayout.addView(imageContainer);
     }
 }
+

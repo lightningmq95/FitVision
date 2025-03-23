@@ -11,14 +11,18 @@ import retrofit2.http.Body;
 
 public interface ApiService {
 
-    // ✅ Fix: Removed username! Now it only expects multiple images
+
     @Multipart
     @POST("/analyze")
     Call<List<Map<String, String>>> analyzeImages(
             @Part List<MultipartBody.Part> images
     );
 
-    // ✅ Fix: Ensure corrections are sent correctly
+    @POST("/analyzeText")
+    Call<Map<String, String>> analyzeTextData(@Body Map<String, String> data);
+
+
+    // Fix: Ensure corrections are sent correctly
     @POST("/sendCorrections")
     Call<Map<String, String>> sendCorrections(@Body List<Map<String, String>> corrections);
 }
