@@ -41,15 +41,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        // Bypass login by setting user as "logged in"
-//        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-//        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
-//
-//        if (!isLoggedIn) {
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
-//            editor.apply();
-//        }
+        // Bypass login by setting user as "logged in"
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+        if (!isLoggedIn) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
+            editor.apply();
+        }
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
