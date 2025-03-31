@@ -51,3 +51,6 @@ local.properties
 
 Models/Dataset/
 Models/images/
+
+# Database Images
+src/main/Database/Temp/images
