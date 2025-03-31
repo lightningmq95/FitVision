@@ -25,15 +25,14 @@ public class ClothingAdapter extends RecyclerView.Adapter<ClothingAdapter.Clothi
     @NonNull
     @Override
     public ClothingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_grid, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_grid, parent, false);
         return new ClothingViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ClothingViewHolder holder, int position) {
         ClothingItem item = items.get(position);
-        holder.imageView.setImageResource(item.getImageResId());
+        holder.imageView.setImageBitmap(item.getImageBitmap());
         holder.textView.setText(item.getName());
     }
 

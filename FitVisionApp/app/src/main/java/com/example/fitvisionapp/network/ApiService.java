@@ -8,6 +8,8 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+
 
 public interface ApiService {
 
@@ -22,7 +24,12 @@ public interface ApiService {
     Call<Map<String, String>> analyzeTextData(@Body Map<String, String> data);
 
 
-    // Fix: Ensure corrections are sent correctly
+
     @POST("/sendCorrections")
     Call<Map<String, String>> sendCorrections(@Body List<Map<String, String>> corrections);
+
+
+    @GET("images")
+    Call<List<ApiImageTemp>> getImages();
+
 }
