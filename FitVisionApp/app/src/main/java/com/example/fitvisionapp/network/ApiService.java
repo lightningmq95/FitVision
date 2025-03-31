@@ -13,7 +13,7 @@ public interface ApiService {
 
 
     @Multipart
-    @POST("/analyze")
+    @POST("/upload-image/devastatingrpg")
     Call<List<Map<String, String>>> analyzeImages(
             @Part List<MultipartBody.Part> images
     );

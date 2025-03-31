@@ -12,7 +12,7 @@ import happybase
 
 app = FastAPI()
 # Load the saved model
-# model = tf.keras.models.load_model('model')
+model = tf.keras.models.load_model('model.keras')
 CLASS_NAMES = ['dress', 'pants', 'shirts']  # Replace with your actual class names
 
 
@@ -84,19 +84,19 @@ async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
         #     check=True
         # )
         # Classify the image
-        # img = image.load_img(local_path, target_size=(28, 28), color_mode='grayscale')
-        # img_array = image.img_to_array(img)
-        # img_array = np.expand_dims(img_array, axis=0)
-        # img_array = img_array / 255.0
+        img = image.load_img(local_path, target_size=(28, 28), color_mode='grayscale')
+        img_array = image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array = img_array / 255.0
 
         # # Make prediction
-        # predictions = model.predict(img_array)
-        # predicted_class = np.argmax(predictions[0])
-        # classification = CLASS_NAMES[predicted_class]
+        predictions = model.predict(img_array)
+        predicted_class = np.argmax(predictions[0])
+        classification = CLASS_NAMES[predicted_class]
         
         # Parse the JSON output from Spark job
         # spark_result = {"classification": predicted_class, "color": "red"}
-        spark_result = {"classification": 0, "color": "red"}
+        spark_result = {"classification": classification, "color": "red"}
         
         # Clean up files in container and locally
         # subprocess.run(
