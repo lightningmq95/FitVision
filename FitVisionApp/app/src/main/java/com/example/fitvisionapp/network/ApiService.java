@@ -7,17 +7,18 @@ import retrofit2.Call;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.Body;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
     @Multipart
-    @POST("/analyze")
-    Call<Map<String, String>> analyzeImage(
+    @POST("/upload-image/{userid}")
+    Call<Map<String, String>> uploadImage(
+            @Path("userid") String userId,
             @Part MultipartBody.Part image,
-            @Part("clothing_name") RequestBody clothingName // NEW: Send clothing name along with image
+            @Part("image_name") RequestBody imageName  // NEW: Send image name
     );
 
     @POST("/sendCorrection")
-    Call<Map<String, String>> sendCorrection(@Body Map<String, String> data);
+    Call<Map<String, String>> sendCorrection(@retrofit2.http.Body Map<String, String> data);
 }
