@@ -2,9 +2,10 @@ package com.example.fitvisionapp.ui.images;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,203 +16,192 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.example.fitvisionapp.R;
 import com.example.fitvisionapp.network.ApiService;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImageAnalysisFragment extends Fragment {
 
-    private LinearLayout imagePreviewLayout, backendImageLayout;
-    private EditText numImagesInput;
-    private Button uploadButton, submitButton;
-    private List<Uri> imageUris = new ArrayList<>();
-    private List<String> imageNames = new ArrayList<>();
-    private Map<String, String> selectedCategories = new HashMap<>();
-    private Map<String, String> selectedColors = new HashMap<>();
+    private LinearLayout imagePreviewLayout;
+    private Button uploadButton, submitButton, correctButton, incorrectButton, confirmCorrectionButton;
+    private Spinner clothingTypeSpinner, colorSpinner;
+    private EditText clothingNameInput; // NEW: Clothing name input
+    private Uri selectedImageUri;
     private ApiService apiService;
+    private TextView categoryText, colorText;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_image_analysis, container, false);
 
         imagePreviewLayout = root.findViewById(R.id.imagePreviewLayout);
-        backendImageLayout = root.findViewById(R.id.backendImageLayout);
         uploadButton = root.findViewById(R.id.uploadButton);
         submitButton = root.findViewById(R.id.submitButton);
-        numImagesInput = root.findViewById(R.id.numImagesInput);
-
-        // Request permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, 100);
-        } else {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-        }
+        correctButton = root.findViewById(R.id.correctButton);
+        incorrectButton = root.findViewById(R.id.incorrectButton);
+        confirmCorrectionButton = root.findViewById(R.id.confirmCorrectionButton);
+        clothingTypeSpinner = root.findViewById(R.id.clothingTypeSpinner);
+        colorSpinner = root.findViewById(R.id.colorSpinner);
+        categoryText = root.findViewById(R.id.categoryText);
+        colorText = root.findViewById(R.id.colorText);
+        clothingNameInput = root.findViewById(R.id.clothingNameInput); // NEW: Initializing clothing name field
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl("http://10.0.2.2:5000/")  // Update with actual backend URL
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
 
         uploadButton.setOnClickListener(v -> openImagePicker());
-        submitButton.setOnClickListener(v -> sendImagesToBackend());
+        submitButton.setOnClickListener(v -> sendImageToBackend());
+        correctButton.setOnClickListener(v -> Toast.makeText(getActivity(), "Data Confirmed!", Toast.LENGTH_SHORT).show());
+        incorrectButton.setOnClickListener(v -> showCorrectionFields());
+        confirmCorrectionButton.setOnClickListener(v -> sendCorrectedData());
 
         return root;
     }
 
-    /**
-     * Opens the file picker instead of just the gallery.
-     * Users can now select images from Downloads, Google Drive, and other locations.
-     */
     private void openImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Select Pictures"), 1);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 1);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            if (data.getClipData() != null) {
-                int count = data.getClipData().getItemCount();
-                for (int i = 0; i < count; i++) {
-                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                    imageUris.add(imageUri);
-                }
-            } else if (data.getData() != null) {
-                imageUris.add(data.getData());
-            }
-            displayImages();
+        if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            displayImage();
         }
     }
 
-    private void displayImages() {
+    private void displayImage() {
         imagePreviewLayout.removeAllViews();
-        for (Uri uri : imageUris) {
-            ImageView imgView = new ImageView(getActivity());
-            imgView.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
-            Glide.with(getActivity()).load(uri).into(imgView);  // Use Glide for async loading
-            imagePreviewLayout.addView(imgView);
-        }
+        ImageView imgView = new ImageView(getActivity());
+        imgView.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
+        Glide.with(getActivity()).load(selectedImageUri).into(imgView);
+        imagePreviewLayout.addView(imgView);
     }
 
-//    private void sendImagesToBackend() {
-//        Executors.newSingleThreadExecutor().execute(() -> {  // Run in background
-//            List<MultipartBody.Part> imageParts = new ArrayList<>();
-//            for (Uri uri : imageUris) {
-//                File file = new File(uri.getPath());
-//                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-//                MultipartBody.Part imagePart = MultipartBody.Part.createFormData("images", file.getName(), requestBody);
-//                imageParts.add(imagePart);
-//            }
-//
-//            apiService.analyzeImages(imageParts).enqueue(new Callback<List<Map<String, String>>>() {
-//                @Override
-//                public void onResponse(Call<List<Map<String, String>>> call, Response<List<Map<String, String>>> response) {
-//                    if (response.isSuccessful() && response.body() != null) {
-//                        requireActivity().runOnUiThread(() -> {
-//                            backendImageLayout.removeAllViews();
-//                            for (Map<String, String> imageResponse : response.body()) {
-//                                displayImageResult(imageResponse);
-//                            }
-//                        });
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<List<Map<String, String>>> call, Throwable t) {
-//                    requireActivity().runOnUiThread(() ->
-//                            Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show()
-//                    );
-//                }
-//            });
-//        });
-//    }
+    private String getRealPathFromURI(Uri uri) {
+        if (getActivity() == null) return null;
+        String filePath = null;
 
-    private void sendImagesToBackend() {
-        String testCategory = "Jacket";  // Hardcoded test data
-        String testColor = "Blue";  // Hardcoded test data
+        if (DocumentsContract.isDocumentUri(getActivity(), uri)) {
+            String docId = DocumentsContract.getDocumentId(uri);
+            if (uri.getAuthority().equals("com.android.providers.media.documents")) {
+                String id = docId.split(":")[1];
+                String[] columns = {MediaStore.Images.Media.DATA};
+                String selection = MediaStore.Images.Media._ID + "=?";
+                filePath = queryFilePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, selection, new String[]{id});
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            filePath = queryFilePath(uri, new String[]{MediaStore.Images.Media.DATA}, null, null);
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            filePath = uri.getPath();
+        }
 
-        Map<String, String> testData = new HashMap<>();
-        testData.put("category", testCategory);
-        testData.put("color", testColor);
+        return filePath;
+    }
 
-        apiService.analyzeTextData(testData).enqueue(new Callback<Map<String, String>>() {
+    private String queryFilePath(Uri uri, String[] projection, String selection, String[] selectionArgs) {
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, selection, selectionArgs, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            if (cursor.moveToFirst()) {
+                String path = cursor.getString(columnIndex);
+                cursor.close();
+                return path;
+            }
+            cursor.close();
+        }
+        return null;
+    }
+
+    private void sendImageToBackend() {
+        if (selectedImageUri == null) {
+            Toast.makeText(getActivity(), "No image selected!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String clothingName = clothingNameInput.getText().toString().trim(); // NEW: Get clothing name input
+        if (clothingName.isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter clothing name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String imagePath = getRealPathFromURI(selectedImageUri);
+        if (imagePath == null) {
+            Toast.makeText(getActivity(), "Could not get image path!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File file = new File(imagePath);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName); // NEW: Clothing name request body
+
+        apiService.analyzeImage(imagePart, namePart).enqueue(new Callback<Map<String, String>>() {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    requireActivity().runOnUiThread(() -> {
-                        backendImageLayout.removeAllViews();
+                    Map<String, String> result = response.body();
+                    categoryText.setText("Category: " + result.get("category"));
+                    colorText.setText("Color: " + result.get("color"));
 
-                        // Display Mock Data
-                        TextView categoryView = new TextView(getActivity());
-                        categoryView.setText("Category: " + response.body().get("category"));
-
-                        TextView colorView = new TextView(getActivity());
-                        colorView.setText("Color: " + response.body().get("color"));
-
-                        backendImageLayout.addView(categoryView);
-                        backendImageLayout.addView(colorView);
-                    });
+                    categoryText.setVisibility(View.VISIBLE);
+                    colorText.setVisibility(View.VISIBLE);
+                    correctButton.setVisibility(View.VISIBLE);
+                    incorrectButton.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(getActivity(), "Server Error!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                Toast.makeText(getActivity(), "Failed to connect!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void showCorrectionFields() {
+        clothingTypeSpinner.setVisibility(View.VISIBLE);
+        colorSpinner.setVisibility(View.VISIBLE);
+        confirmCorrectionButton.setVisibility(View.VISIBLE);
+    }
 
-    private void displayImageResult(Map<String, String> imageResponse) {
-        String imageName = imageResponse.get("image_name");
-        String category = imageResponse.get("category");
-        String color = imageResponse.get("color");
+    private void sendCorrectedData() {
+        Map<String, String> correctedData = new HashMap<>();
+        correctedData.put("corrected_category", clothingTypeSpinner.getSelectedItem().toString());
+        correctedData.put("corrected_color", colorSpinner.getSelectedItem().toString());
 
-        imageNames.add(imageName);
+        apiService.sendCorrection(correctedData).enqueue(new Callback<Map<String, String>>() {
+            @Override
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "Correction Sent!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Error sending correction!", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        // Create Image View
-        ImageView imgView = new ImageView(getActivity());
-        imgView.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
-        Glide.with(getActivity()).load(imageResponse.get("image_url")).into(imgView);
-
-        // Category and Color Display
-        TextView categoryView = new TextView(getActivity());
-        categoryView.setText("Category: " + category);
-
-        TextView colorView = new TextView(getActivity());
-        colorView.setText("Color: " + color);
-
-        // Create Layout for Image + Info
-        LinearLayout imageContainer = new LinearLayout(getActivity());
-        imageContainer.setOrientation(LinearLayout.VERTICAL);
-        imageContainer.addView(imgView);
-        imageContainer.addView(categoryView);
-        imageContainer.addView(colorView);
-
-        backendImageLayout.addView(imageContainer);
+            @Override
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                Toast.makeText(getActivity(), "Connection Failed!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
-
