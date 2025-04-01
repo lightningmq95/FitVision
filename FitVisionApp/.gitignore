@@ -11,6 +11,7 @@ data/
 jobs/
 /captures
 .gradle/
+.gradle
 .externalNativeBuild/
 .cxx/
 

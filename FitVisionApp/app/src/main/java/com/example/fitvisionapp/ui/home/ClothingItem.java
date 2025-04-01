@@ -1,14 +1,16 @@
 package com.example.fitvisionapp.ui.home;
+import android.graphics.Bitmap;
 
 public class ClothingItem {
     private final String name;
     private final String category;
-    private final int imageResId;
+    //private final int imageResId;
+    private final Bitmap imageBitmap;
 
-    public ClothingItem(String name, String category, int imageResId) {
+    public ClothingItem(String name, String category, Bitmap imageBitmap) {
         this.name = name;
         this.category = category;
-        this.imageResId = imageResId;
+        this.imageBitmap = imageBitmap;
     }
 
     public String getName() {
@@ -19,7 +21,7 @@ public class ClothingItem {
         return category;
     }
 
-    public int getImageResId() {
-        return imageResId;
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
     }
 }

@@ -17,7 +17,10 @@ services:
       - clothGAN-network
 
   spark:
-    image: docker.io/bitnami/spark:3.5.3
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    # image: docker.io/bitnami/spark:3.5.3
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no

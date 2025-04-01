@@ -1,0 +1,11 @@
+FROM docker.io/bitnami/spark:3.5.3
+
+USER root
+
+# Install python3-pip
+RUN apt-get update && apt-get install -y python3-pip
+
+# Install TensorFlow
+RUN pip3 install tensorflow
+
+USER 1001
