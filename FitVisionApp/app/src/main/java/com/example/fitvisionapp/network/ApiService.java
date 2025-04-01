@@ -9,6 +9,8 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import java.util.List;
+import retrofit2.http.GET;
 
 public interface ApiService {
 
@@ -22,4 +24,9 @@ public interface ApiService {
 
     @POST("/sendCorrection")
     Call<Map<String, String>> sendCorrection(@Body Map<String, String> data);
+
+
+    // Add this method to retrieve images
+    @GET("/get-images")  // Ensure this matches your backend endpoint
+    Call<List<ApiImageTemp>> getImages();
 }
