@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.fitvisionapp.R;
 import com.example.fitvisionapp.network.ApiService;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImageAnalysisFragment extends Fragment {
 
-    private LinearLayout imagePreviewLayout;
+    private LinearLayout imagePreviewLayout, correctIncorrectLayout;
     private Button uploadButton, submitButton, correctButton, incorrectButton, confirmCorrectionButton;
     private Spinner clothingTypeSpinner, colorSpinner;
     private EditText clothingNameInput;
@@ -47,8 +48,14 @@ public class ImageAnalysisFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_image_analysis, container, false);
 
-        // Firebase User ID
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // ✅ Firebase User ID Check
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            userId = "test_user";  // TEMPORARY TEST VALUE
+            Toast.makeText(getActivity(), "WARNING: Using Test User ID!", Toast.LENGTH_SHORT).show();
+        } else {
+            userId = user.getUid();
+        }
 
         // UI Elements
         imagePreviewLayout = root.findViewById(R.id.imagePreviewLayout);
@@ -62,6 +69,15 @@ public class ImageAnalysisFragment extends Fragment {
         clothingNameInput = root.findViewById(R.id.clothingNameInput);
         categoryText = root.findViewById(R.id.categoryText);
         colorText = root.findViewById(R.id.colorText);
+        correctIncorrectLayout = root.findViewById(R.id.correctIncorrectLayout);
+
+        // Hide initially
+        categoryText.setVisibility(View.GONE);
+        colorText.setVisibility(View.GONE);
+        correctIncorrectLayout.setVisibility(View.GONE);
+        clothingTypeSpinner.setVisibility(View.GONE);
+        colorSpinner.setVisibility(View.GONE);
+        confirmCorrectionButton.setVisibility(View.GONE);
 
         // Retrofit API Service
         Retrofit retrofit = new Retrofit.Builder()
@@ -150,8 +166,7 @@ public class ImageAnalysisFragment extends Fragment {
 
                     categoryText.setVisibility(View.VISIBLE);
                     colorText.setVisibility(View.VISIBLE);
-                    correctButton.setVisibility(View.VISIBLE);
-                    incorrectButton.setVisibility(View.VISIBLE);
+                    correctIncorrectLayout.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getActivity(), "Server Error!", Toast.LENGTH_SHORT).show();
                 }

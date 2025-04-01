@@ -20,7 +20,7 @@
             android:text="Upload Image"
             android:layout_marginTop="10dp"/>
 
-        <!-- Image Preview -->
+        <!-- Image Preview (With Placeholder) -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -29,7 +29,17 @@
                 android:id="@+id/imagePreviewLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"/>
+                android:orientation="horizontal">
+
+                <!-- Placeholder Image -->
+                <ImageView
+                    android:id="@+id/placeholderImage"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:src="@android:drawable/ic_menu_gallery"
+
+                    android:contentDescription="Placeholder for image preview"/>
+            </LinearLayout>
         </HorizontalScrollView>
 
         <!-- Clothing Name Input -->
