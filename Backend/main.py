@@ -125,6 +125,7 @@ async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
 async def update_image_category(
     user_id: str, 
     image_id: str, 
+    image_name: str,
     category: int
 ):
     try:
@@ -147,7 +148,8 @@ async def update_image_category(
         
         # Update category in HBase
         table.put(row_key, {
-            b'metadata:category': str(category).encode('utf-8')
+            b'metadata:category': str(category).encode('utf-8'),
+            b'metadata:image_name': str(image_name).encode('utf-8')
         })
         
         # Close HBase connection
@@ -201,7 +203,7 @@ async def get_user_images(user_id: str):
                 
                 # Get metadata from HBase
                 category = int(data[b'metadata:category'].decode('utf-8'))
-                # color = data[b'metadata:color'].decode('utf-8')
+                image_name = data.get(b'metadata:image_name', b'').decode('utf-8') or 'Untitled'                # color = data[b'metadata:color'].decode('utf-8')
                 
                 # Get image from HDFS
                 hdfs_path = f"/user/images/{user_id}/{image_id}.jpg"
@@ -240,6 +242,7 @@ async def get_user_images(user_id: str):
 
                 images.append({
                     "image_id": image_id,
+                    "image_name": image_name,
                     "category": category,
                     # "color": color,
                     "image_data": image_base64
@@ -251,11 +254,12 @@ async def get_user_images(user_id: str):
 
         logger.info(f"Processed {scan_count} images, returning {len(images)} valid results")
         
-        return JSONResponse(content={
-            "status": "success",
-            "count": len(images),
-            "images": images
-        })
+        # return JSONResponse(content={
+        #     "status": "success",
+        #     "count": len(images),
+        #     "images": images
+        # })
+        return images
 
     except Exception as e:
         logger.error(f"Error in get_user_images: {str(e)}")

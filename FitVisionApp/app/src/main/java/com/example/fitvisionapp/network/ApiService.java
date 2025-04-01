@@ -29,7 +29,7 @@ public interface ApiService {
     Call<Map<String, String>> sendCorrections(@Body List<Map<String, String>> corrections);
 
 
-    @GET("images")
+    @GET("/images/devastatingrpg")
     Call<List<ApiImageTemp>> getImages();
 
 }
