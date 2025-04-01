@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 import uuid, os, subprocess
 import json
 import tensorflow as tf
@@ -15,10 +15,13 @@ app = FastAPI()
 model = tf.keras.models.load_model('model.keras')
 CLASS_NAMES = ['dress', 'pants', 'shirts']  # Replace with your actual class names
 
-@app.post("/upload-image/{user_id}")
-async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
+@app.post("/upload-image/{userId}")
+async def upload_image(
+    userId: str,
+    image_name: str = Form(...),
+    file: UploadFile = File(...)
+):
     # Validate file type
-    file = files[0]
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
 
@@ -41,7 +44,7 @@ async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
         # Create user directory in HDFS if it doesn't exist
         subprocess.run(
             ["docker", "exec", "namenode", 
-             "hdfs", "dfs", "-mkdir", "-p", f"/user/images/{user_id}"],
+             "hdfs", "dfs", "-mkdir", "-p", f"/user/images/{userId}"],
             check=True
         )
 
@@ -52,7 +55,7 @@ async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
         )
 
         # Move file from container's tmp to HDFS
-        hdfs_path = f"/user/images/{user_id}/{image_id}{file_extension}"
+        hdfs_path = f"/user/images/{userId}/{image_id}{file_extension}"
         subprocess.run(
             ["docker", "exec", "namenode",
              "hdfs", "dfs", "-put", f"/tmp/{image_id}{file_extension}", hdfs_path],
@@ -65,31 +68,63 @@ async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
         img_array = np.expand_dims(img_array, axis=0)
         img_array = img_array / 255.0
 
-        # # Make prediction
+        # Make prediction
         predictions = model.predict(img_array)
         predicted_class = np.argmax(predictions[0])
         classification = CLASS_NAMES[predicted_class]
 
-        # Clean up local temporary file
-        os.remove(local_path)
+        # # Connect to Cassandra and save metadata
+        # auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+        # cluster = Cluster(['localhost'], port=9042, auth_provider=auth_provider)
+        # session = cluster.connect('fitvision')
+
+        # # Insert into Cassandra
+        # query = """
+        # INSERT INTO image_metadata (
+        #     user_id,
+        #     image_id,
+        #     image_extension,
+        #     image_name,
+        #     classification
+        # ) VALUES (%s, %s, %s, %s, %s)
+        # """
+        
+        # session.execute(
+        #     query, 
+        #     (
+        #         user_id,
+        #         image_id,
+        #         file_extension,
+        #         image_name,
+        #         classification
+        #     )
+        # )
+
+        # # Close Cassandra connection
+        # cluster.shutdown()
+
+        # # Clean up local temporary file
+        # os.remove(local_path)
         
         return {
             "status": "completed",
             "image_id": image_id,
-            "user_id": user_id,
-            "classification": classification,
-            "color": "unkown"
+            "user_id": userId,
+            "image_name": image_name,
+            "category": classification,
+            "color": "red",
+            "image_extension": file_extension
         }
         
     except subprocess.CalledProcessError as e:
-        # Clean up temporary files in case of error
         if os.path.exists(local_path):
             os.remove(local_path)
         raise HTTPException(status_code=500, detail=f"Processing failed: {e.stderr}")
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Invalid response from Spark job")
-
-
+    except Exception as e:
+        if os.path.exists(local_path):
+            os.remove(local_path)
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    
 
 # @app.post("/upload-image/{user_id}")
 # async def upload_images(user_id: str, files: List[UploadFile] = File(...)):
@@ -645,44 +680,44 @@ async def update_clothing_combo(
             detail=f"Failed to update combo: {str(e)}"
         )
 
-@app.get("/combos/{user_id}")
-async def get_user_combos(user_id: str):
-    try:
-        # Connect to Cassandra cluster with authentication
-        auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
-        cluster = Cluster(
-            ['localhost'], 
-            port=9042,
-            auth_provider=auth_provider
-        )
-        session = cluster.connect('fitvision')
+# @app.get("/combos/{user_id}")
+# async def get_user_combos(user_id: str):
+#     try:
+#         # Connect to Cassandra cluster with authentication
+#         auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+#         cluster = Cluster(
+#             ['localhost'], 
+#             port=9042,
+#             auth_provider=auth_provider
+#         )
+#         session = cluster.connect('fitvision')
 
-        # Get all combos for user
-        query = """
-        SELECT combo_name, top_clothing_id, bottom_clothing_id
-        FROM clothing_combos
-        WHERE user_id = %s
-        """
-        rows = session.execute(query, [user_id])
+#         # Get all combos for user
+#         query = """
+#         SELECT combo_name, top_clothing_id, bottom_clothing_id
+#         FROM clothing_combos
+#         WHERE user_id = %s
+#         """
+#         rows = session.execute(query, [user_id])
         
-        # Filter for complete combos in Python
-        combo_names = [
-            row.combo_name 
-            for row in rows 
-            if row.top_clothing_id is not None and row.bottom_clothing_id is not None
-        ]
+#         # Filter for complete combos in Python
+#         combo_names = [
+#             row.combo_name 
+#             for row in rows 
+#             if row.top_clothing_id is not None and row.bottom_clothing_id is not None
+#         ]
 
-        # Close Cassandra connection
-        cluster.shutdown()
+#         # Close Cassandra connection
+#         cluster.shutdown()
 
-        return combo_names
+#         return combo_names
 
-    except Exception as e:
-        logger.error(f"Cassandra error: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to retrieve combos: {str(e)}"
-        )
+#     except Exception as e:
+#         logger.error(f"Cassandra error: {str(e)}")
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Failed to retrieve combos: {str(e)}"
+#         )
 
 @app.get("/combos/{user_id}/{combo_name}")
 async def get_combo_details(user_id: str, combo_name: str):

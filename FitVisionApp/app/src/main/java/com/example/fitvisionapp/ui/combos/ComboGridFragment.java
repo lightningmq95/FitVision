@@ -18,7 +18,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,15 +41,23 @@ public class ComboGridFragment extends Fragment {
         //  Bypass Firebase Login for Testing
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            userId = "test_user";  //  Use test ID if not logged in
+            userId = "devastatingrpg";  //  Use test ID if not logged in
             Toast.makeText(getActivity(), "WARNING: Using Test User ID!", Toast.LENGTH_SHORT).show();
         } else {
             userId = user.getUid();  //  Use real ID if logged in
         }
 
+        // Setup HTTP client with longer timeout
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         // Initialize API
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl("http://10.0.2.2:8000/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
@@ -58,7 +68,7 @@ public class ComboGridFragment extends Fragment {
     }
 
     private void fetchCombos() {
-        apiService.getCombos(userId).enqueue(new Callback<List<String>>() {
+        apiService.getCombos().enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {

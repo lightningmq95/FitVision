@@ -17,9 +17,9 @@ import retrofit2.http.GET;
 public interface ApiService {
 
     @Multipart
-    @POST("/upload-image/{userid}")
+    @POST("/upload-image/{userId}")
     Call<Map<String, String>> uploadImage(
-            @Path("userid") String userId,
+            @Path("userId") String userId,
             @Part MultipartBody.Part image,
             @Part("image_name") RequestBody imageName  // Check if backend expects String instead
     );
@@ -29,15 +29,15 @@ public interface ApiService {
 
 
     // Add this method to retrieve images
-    @GET("/get-images")  // Ensure this matches your backend endpoint
+    @GET("/images/devastatingrpg")  // Ensure this matches your backend endpoint
     Call<List<ApiImageTemp>> getImages();
 
-    @GET("/getCombos/{userid}")
-    Call<List<String>> getCombos(@Path("userid") String userId);
+    @GET("/combos/devastatingrpg")
+    Call<List<String>> getCombos();
 
-    @GET("/getComboDetails/{userid}/{comboName}")
-    Call<List<ComboImage>> getComboDetails(
-            @Path("userid") String userId,
+    @GET("/combos/devastatingrpg/{comboName}")
+    Call<Map<String, Object>> getComboDetails(
+//            @Path("userid") String userId,
             @Path("comboName") String comboName
     );
 
