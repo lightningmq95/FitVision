@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.fitvisionapp.R;
 import com.example.fitvisionapp.network.ApiService;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,14 +38,19 @@ public class ImageAnalysisFragment extends Fragment {
     private LinearLayout imagePreviewLayout;
     private Button uploadButton, submitButton, correctButton, incorrectButton, confirmCorrectionButton;
     private Spinner clothingTypeSpinner, colorSpinner;
-    private EditText clothingNameInput; // NEW: Clothing name input
+    private EditText clothingNameInput;
     private Uri selectedImageUri;
     private ApiService apiService;
     private TextView categoryText, colorText;
+    private String imageId, userId;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_image_analysis, container, false);
 
+        // Firebase User ID
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // UI Elements
         imagePreviewLayout = root.findViewById(R.id.imagePreviewLayout);
         uploadButton = root.findViewById(R.id.uploadButton);
         submitButton = root.findViewById(R.id.submitButton);
@@ -54,25 +59,27 @@ public class ImageAnalysisFragment extends Fragment {
         confirmCorrectionButton = root.findViewById(R.id.confirmCorrectionButton);
         clothingTypeSpinner = root.findViewById(R.id.clothingTypeSpinner);
         colorSpinner = root.findViewById(R.id.colorSpinner);
+        clothingNameInput = root.findViewById(R.id.clothingNameInput);
         categoryText = root.findViewById(R.id.categoryText);
         colorText = root.findViewById(R.id.colorText);
-        clothingNameInput = root.findViewById(R.id.clothingNameInput); // NEW: Initializing clothing name field
 
+        // Retrofit API Service
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")  // Update with actual backend URL
+                .baseUrl("http://10.0.2.2:5000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
 
+        // Click Listeners
         uploadButton.setOnClickListener(v -> openImagePicker());
         submitButton.setOnClickListener(v -> sendImageToBackend());
-        correctButton.setOnClickListener(v -> Toast.makeText(getActivity(), "Data Confirmed!", Toast.LENGTH_SHORT).show());
         incorrectButton.setOnClickListener(v -> showCorrectionFields());
         confirmCorrectionButton.setOnClickListener(v -> sendCorrectedData());
 
         return root;
     }
 
+    // Open Gallery to Pick Image
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 1);
@@ -87,6 +94,7 @@ public class ImageAnalysisFragment extends Fragment {
         }
     }
 
+    // Display Image in Preview
     private void displayImage() {
         imagePreviewLayout.removeAllViews();
         ImageView imgView = new ImageView(getActivity());
@@ -95,50 +103,28 @@ public class ImageAnalysisFragment extends Fragment {
         imagePreviewLayout.addView(imgView);
     }
 
+    // Convert URI to File Path
     private String getRealPathFromURI(Uri uri) {
         if (getActivity() == null) return null;
         String filePath = null;
 
-        if (DocumentsContract.isDocumentUri(getActivity(), uri)) {
-            String docId = DocumentsContract.getDocumentId(uri);
-            if (uri.getAuthority().equals("com.android.providers.media.documents")) {
-                String id = docId.split(":")[1];
-                String[] columns = {MediaStore.Images.Media.DATA};
-                String selection = MediaStore.Images.Media._ID + "=?";
-                filePath = queryFilePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, selection, new String[]{id});
-            }
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            filePath = queryFilePath(uri, new String[]{MediaStore.Images.Media.DATA}, null, null);
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            filePath = uri.getPath();
-        }
-
-        return filePath;
-    }
-
-    private String queryFilePath(Uri uri, String[] projection, String selection, String[] selectionArgs) {
-        Cursor cursor = getActivity().getContentResolver().query(uri, projection, selection, selectionArgs, null);
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             if (cursor.moveToFirst()) {
-                String path = cursor.getString(columnIndex);
-                cursor.close();
-                return path;
+                filePath = cursor.getString(columnIndex);
             }
             cursor.close();
         }
-        return null;
+        return filePath;
     }
 
+    // Send Image to Backend
     private void sendImageToBackend() {
+        String clothingName = clothingNameInput.getText().toString();
         if (selectedImageUri == null) {
             Toast.makeText(getActivity(), "No image selected!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String clothingName = clothingNameInput.getText().toString().trim(); // NEW: Get clothing name input
-        if (clothingName.isEmpty()) {
-            Toast.makeText(getActivity(), "Please enter clothing name!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -151,13 +137,14 @@ public class ImageAnalysisFragment extends Fragment {
         File file = new File(imagePath);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
         MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
-        RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName); // NEW: Clothing name request body
+        RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName);
 
-        apiService.analyzeImage(imagePart, namePart).enqueue(new Callback<Map<String, String>>() {
+        apiService.uploadImage(userId, imagePart, namePart).enqueue(new Callback<Map<String, String>>() {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Map<String, String> result = response.body();
+                    imageId = result.get("image_id");
                     categoryText.setText("Category: " + result.get("category"));
                     colorText.setText("Color: " + result.get("color"));
 
@@ -177,14 +164,18 @@ public class ImageAnalysisFragment extends Fragment {
         });
     }
 
+    // Show Dropdowns When "Incorrect" is Clicked
     private void showCorrectionFields() {
         clothingTypeSpinner.setVisibility(View.VISIBLE);
         colorSpinner.setVisibility(View.VISIBLE);
         confirmCorrectionButton.setVisibility(View.VISIBLE);
     }
 
+    // Send Corrected Data to Backend
     private void sendCorrectedData() {
         Map<String, String> correctedData = new HashMap<>();
+        correctedData.put("userid", userId);
+        correctedData.put("image_id", imageId);
         correctedData.put("corrected_category", clothingTypeSpinner.getSelectedItem().toString());
         correctedData.put("corrected_color", colorSpinner.getSelectedItem().toString());
 

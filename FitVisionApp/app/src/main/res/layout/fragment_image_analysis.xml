@@ -12,16 +12,6 @@
         android:padding="20dp"
         android:gravity="center">
 
-        <!-- Clothing Name Input Field -->
-        <EditText
-            android:id="@+id/clothingNameInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter clothing name"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:layout_marginBottom="10dp"/>
-
         <!-- Upload Image Button -->
         <Button
             android:id="@+id/uploadButton"
@@ -35,13 +25,28 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginBottom="10dp">
-
             <LinearLayout
                 android:id="@+id/imagePreviewLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"/>
         </HorizontalScrollView>
+
+        <!-- Clothing Name Input -->
+        <EditText
+            android:id="@+id/clothingNameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Clothing Name"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:layout_marginTop="10dp"/>
 
         <!-- Backend Image Response -->
         <TextView
@@ -86,29 +91,11 @@
         </LinearLayout>
 
         <!-- Correction Dropdowns -->
-        <TextView
-            android:id="@+id/clothingTypeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select Correct Clothing Type:"
-            android:textSize="18sp"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"/>
-
         <Spinner
             android:id="@+id/clothingTypeSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/colorLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select Correct Color:"
-            android:textSize="18sp"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"/>
 
         <Spinner
             android:id="@+id/colorSpinner"
@@ -122,14 +109,6 @@
             android:layout_height="wrap_content"
             android:text="Confirm Correction"
             android:visibility="gone"
-            android:layout_marginTop="10dp"/>
-
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Submit"
             android:layout_marginTop="10dp"/>
     </LinearLayout>
 </ScrollView>
