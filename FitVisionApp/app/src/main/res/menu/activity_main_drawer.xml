@@ -25,7 +25,12 @@
             android:id="@+id/imageAnalysisFragment"
             android:icon="@drawable/ic_photo"
             android:title="Image Analysis" />
-        <!-- pic to be added-->
+
+        <item
+            android:id="@+id/navigation_combos"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="Combos" />
+
 
     </group>
 </menu>

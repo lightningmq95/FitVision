@@ -165,11 +165,18 @@ public class MainActivity extends AppCompatActivity {
                     logoutUser();
                     return true;
                 }
-                else if (id == R.id.imageAnalysisFragment) {  // fixed Navigation
+                else if (id == R.id.imageAnalysisFragment) {
                     navController.navigate(R.id.imageAnalysisFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
                 }
+
+                else if (id == R.id.navigation_combos) {
+                    navController.navigate(R.id.comboGridFragment);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
+
 
                 // Default Navigation Component behavior
                 boolean handled = NavigationUI.onNavDestinationSelected(item, navController);

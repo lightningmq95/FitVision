@@ -29,4 +29,19 @@
         android:label="Image Analysis">
     </fragment>
 
+    <fragment
+        android:id="@+id/comboGridFragment"
+        android:name="com.example.fitvisionapp.ui.combos.ComboGridFragment"
+        android:label="Combo Grid">
+        <action
+            android:id="@+id/action_comboGrid_to_comboDetail"
+            app:destination="@id/comboDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/comboDetailFragment"
+        android:name="com.example.fitvisionapp.ui.combos.ComboDetailFragment"
+        android:label="Combo Detail" />
+
+
 </navigation>
