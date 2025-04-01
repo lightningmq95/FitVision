@@ -38,6 +38,7 @@ public class ImageAnalysisFragment extends Fragment {
     private LinearLayout imagePreviewLayout;
     private Button uploadButton, submitButton, correctButton, incorrectButton, confirmCorrectionButton;
     private Spinner clothingTypeSpinner, colorSpinner;
+    private EditText clothingNameInput; // NEW: Clothing name input
     private Uri selectedImageUri;
     private ApiService apiService;
     private TextView categoryText, colorText;
@@ -55,6 +56,7 @@ public class ImageAnalysisFragment extends Fragment {
         colorSpinner = root.findViewById(R.id.colorSpinner);
         categoryText = root.findViewById(R.id.categoryText);
         colorText = root.findViewById(R.id.colorText);
+        clothingNameInput = root.findViewById(R.id.clothingNameInput); // NEW: Initializing clothing name field
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:5000/")  // Update with actual backend URL
@@ -134,6 +136,12 @@ public class ImageAnalysisFragment extends Fragment {
             return;
         }
 
+        String clothingName = clothingNameInput.getText().toString().trim(); // NEW: Get clothing name input
+        if (clothingName.isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter clothing name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String imagePath = getRealPathFromURI(selectedImageUri);
         if (imagePath == null) {
             Toast.makeText(getActivity(), "Could not get image path!", Toast.LENGTH_SHORT).show();
@@ -143,8 +151,9 @@ public class ImageAnalysisFragment extends Fragment {
         File file = new File(imagePath);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
         MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName); // NEW: Clothing name request body
 
-        apiService.analyzeImage(imagePart).enqueue(new Callback<Map<String, String>>() {
+        apiService.analyzeImage(imagePart, namePart).enqueue(new Callback<Map<String, String>>() {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
