@@ -1,0 +1,207 @@
+name: clothGAN
+version: "3"
+
+services:
+  zookeeper:
+    container_name: zookeeper
+    image: docker.io/bitnami/zookeeper:3.9
+    ports:
+      - '2181:2181'
+      - '8091:8080'
+    volumes:
+      - ${ZOOKEEPER_DATA_DIR}:/bitnami/zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_ENABLE_ADMIN_SERVER=yes
+    networks:
+      - clothGAN-network
+
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    # image: docker.io/bitnami/spark:3.5.3
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8080:8080'
+    volumes:
+      - ${SPARK_JOBS_DIR}:/opt/spark-jobs
+    networks:
+      - clothGAN-network
+
+  spark-worker:
+    image: docker.io/bitnami/spark:3.5.3
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    networks:
+      - clothGAN-network
+    deploy:
+      replicas: ${SPARK_WORKER_COUNT:-1}
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+    volumes:
+      - ${KAFKA_DATA_DIR}:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:
+      - clothGAN-network
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8090:8080
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    depends_on:
+      - kafka
+    networks:
+      - clothGAN-network
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    networks:
+      - clothGAN-network
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - clothGAN-network
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - clothGAN-network
+
+  nodemanager1:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - clothGAN-network
+
+  historyserver:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+    container_name: historyserver
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+    volumes:
+      - hadoop_historyserver:/hadoop/yarn/timeline
+    env_file:
+      - ./hadoop.env
+    networks:
+      - clothGAN-network
+
+  # Add Zookeeper UI
+  zoonavigator:
+    image: elkozmon/zoonavigator:latest
+    container_name: zoonavigator
+    ports:
+      - "9001:9000"
+    environment:
+      HTTP_PORT: 9000
+    networks:
+      - clothGAN-network
+
+  # HDFS file browser
+  hdfs-filebrowser:
+    image: bde2020/hdfs-filebrowser:latest
+    container_name: hdfs-filebrowser
+    ports:
+      - "8088:8088"
+    environment:
+      - NAMENODE_HOST=namenode
+      - NAMENODE_PORT=9000
+      - FILEBROWSER_USERNAME=admin # Add this line
+      - FILEBROWSER_PASSWORD=admin # Add this line
+    networks:
+      - clothGAN-network # HBase Master Server
+  # HBase (All-in-one)
+  hbase:
+    image: dajobe/hbase
+    container_name: hbase
+    hostname: hbase
+    ports:
+      # - 2181:2181 # ZooKeeper
+      # - 8080:8080 # HBase Master Web UI
+      - 8085:8085 # HBase RegionServer Web UI
+      - 9090:9090 # HBase Thrift Server
+      - 9095:9095 # HBase REST Server
+      - 16000:16000 # HBase Master API
+      - 16010:16010 # HBase Master Web UI (alternate)
+      - 16020:16020 # HBase RegionServer API
+      - 16030:16030 # HBase RegionServer Web UI
+    environment:
+      - HBASE_MANAGES_ZK=false # HBase manages its own ZooKeeper\
+    depends_on:
+      - zookeeper
+    volumes:
+      - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml
+      - hbase_data:/data
+    networks:
+      - clothGAN-network
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+  hadoop_historyserver:
+  zookeeper_data:
+  kafka_data:
+  hbase_data:
+    driver: local
+
+networks:
+  clothGAN-network:
+    name: clothGAN-network
+    driver: bridge
