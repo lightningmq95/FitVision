@@ -417,6 +417,111 @@ logger = logging.getLogger(__name__)
 #                 logger.info(f"Cleaned up temp file: {temp_file}")
 
 
+@app.get("/images/{user_id}")
+async def get_user_images(user_id: str):
+    temp_files = []
+    
+    try:
+        logger.info(f"Attempting to get images for user: {user_id}")
+        
+        # Connect to Cassandra cluster with authentication
+        auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+        cluster = Cluster(
+            ['localhost'], 
+            port=9042,
+            auth_provider=auth_provider
+        )
+        session = cluster.connect('fitvision')
+        
+        # Get all images for user
+        query = """
+        SELECT image_id, image_name, classification, image_extension
+        FROM image_metadata
+        WHERE user_id = %s
+        """
+        rows = session.execute(query, [user_id])
+        
+        images = []
+        scan_count = 0
+        
+        for row in rows:
+            try:
+                scan_count += 1
+                logger.info(f"Processing image: {row.image_id}")
+                
+                # Convert classification back to category number
+                CLASS_NAMES = ['dress', 'pants', 'shirts']
+                category = CLASS_NAMES.index(row.classification)
+                
+                # Get image from HDFS
+                hdfs_path = f"/user/images/{user_id}/{row.image_id}{row.image_extension}"
+                temp_path = f"tmp/{row.image_id}{row.image_extension}"
+                temp_files.append(temp_path)
+                
+                # Verify HDFS file exists
+                check_file = subprocess.run(
+                    ["docker", "exec", "namenode", 
+                     "hdfs", "dfs", "-test", "-e", hdfs_path],
+                    capture_output=True
+                )
+                
+                if check_file.returncode != 0:
+                    logger.error(f"Image not found in HDFS: {hdfs_path}")
+                    continue
+                
+                # Copy from HDFS
+                subprocess.run(
+                    ["docker", "exec", "namenode", 
+                     "hdfs", "dfs", "-get", "-f", hdfs_path, "/tmp/"],
+                    check=True
+                )
+                
+                subprocess.run(
+                    ["docker", "cp", 
+                     f"namenode:/tmp/{row.image_id}{row.image_extension}",
+                     temp_path],
+                    check=True
+                )
+
+                # Read and encode image
+                with open(temp_path, "rb") as img_file:
+                    image_bytes = img_file.read()
+                    image_base64 = base64.b64encode(image_bytes).decode()
+
+                images.append({
+                    "image_id": row.image_id,
+                    "image_name": row.image_name,
+                    "category": category,
+                    "classification": row.classification,
+                    "image_extension": row.image_extension,
+                    "image_data": image_base64
+                })
+                
+            except Exception as img_error:
+                logger.error(f"Error processing image {row.image_id}: {str(img_error)}")
+                continue
+
+        logger.info(f"Processed {scan_count} images, returning {len(images)} valid results")
+        
+        # Close Cassandra connection
+        cluster.shutdown()
+        return images
+
+    except Exception as e:
+        logger.error(f"Error in get_user_images: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to retrieve images: {str(e)}"
+        )
+        
+    finally:
+        # Clean up temp files
+        for temp_file in temp_files:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+                logger.info(f"Cleaned up temp file: {temp_file}")
+
+
 @app.get("/combos/{user_id}")
 async def get_user_combos(user_id: str):
     try:
@@ -452,7 +557,6 @@ async def get_user_combos(user_id: str):
     
 
 
-    
 @app.put("/combos/{user_id}/{combo_name}")
 async def update_clothing_combo(
     user_id: str,
