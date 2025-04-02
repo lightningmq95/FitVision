@@ -73,38 +73,38 @@ async def upload_image(
         predicted_class = np.argmax(predictions[0])
         classification = CLASS_NAMES[predicted_class]
 
-        # # Connect to Cassandra and save metadata
-        # auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
-        # cluster = Cluster(['localhost'], port=9042, auth_provider=auth_provider)
-        # session = cluster.connect('fitvision')
+        # Connect to Cassandra and save metadata
+        auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+        cluster = Cluster(['localhost'], port=9042, auth_provider=auth_provider)
+        session = cluster.connect('fitvision')
 
-        # # Insert into Cassandra
-        # query = """
-        # INSERT INTO image_metadata (
-        #     user_id,
-        #     image_id,
-        #     image_extension,
-        #     image_name,
-        #     classification
-        # ) VALUES (%s, %s, %s, %s, %s)
-        # """
+        # Insert into Cassandra
+        query = """
+        INSERT INTO image_metadata (
+            user_id,
+            image_id,
+            image_extension,
+            image_name,
+            classification
+        ) VALUES (%s, %s, %s, %s, %s)
+        """
         
-        # session.execute(
-        #     query, 
-        #     (
-        #         user_id,
-        #         image_id,
-        #         file_extension,
-        #         image_name,
-        #         classification
-        #     )
-        # )
+        session.execute(
+            query, 
+            (
+                userId,
+                image_id,
+                file_extension,
+                image_name,
+                classification
+            )
+        )
 
-        # # Close Cassandra connection
-        # cluster.shutdown()
+        # Close Cassandra connection
+        cluster.shutdown()
 
-        # # Clean up local temporary file
-        # os.remove(local_path)
+        # Clean up local temporary file
+        os.remove(local_path)
         
         return {
             "status": "completed",

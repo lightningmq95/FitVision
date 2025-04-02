@@ -174,10 +174,10 @@ public class ImageAnalysisFragment extends Fragment {
                     Map<String, String> result = response.body();
                     imageId = result.get("image_id");
                     categoryText.setText("Category: " + result.get("category"));
-                    colorText.setText("Color: " + result.get("color"));
+//                    colorText.setText("Color: " + result.get("color"));
 
                     categoryText.setVisibility(View.VISIBLE);
-                    colorText.setVisibility(View.VISIBLE);
+//                    colorText.setVisibility(View.VISIBLE);
                     correctIncorrectLayout.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getActivity(), "Server Error!", Toast.LENGTH_SHORT).show();
