@@ -1,10 +1,21 @@
 package com.example.fitvisionapp.network;
 
+import java.util.HashMap;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+
+
 import com.example.fitvisionapp.models.ComboImage;
 
+import java.util.HashMap;
 import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Multipart;
@@ -28,7 +39,6 @@ public interface ApiService {
     Call<Map<String, String>> sendCorrection(@Body Map<String, String> data);
 
 
-    // Add this method to retrieve images
     @GET("/get-images")  // Ensure this matches your backend endpoint
     Call<List<ApiImageTemp>> getImages();
 
@@ -40,5 +50,18 @@ public interface ApiService {
             @Path("userid") String userId,
             @Path("comboName") String comboName
     );
+
+    @POST("/addToCombo/{userId}/{comboName}/{clothingId}/{category}")
+    Call<Void> addToCombo(
+            @Path("userId") String userId,
+            @Path("comboName") String comboName,
+            @Path("clothingId") String clothingId,
+            @Path("category") String category
+        );
+
+    @POST("add_to_combo")
+    Call<ResponseBody> addToCombo(@Body HashMap<String, String> data);
+
+
 
 }
