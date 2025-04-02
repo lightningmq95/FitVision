@@ -16,10 +16,6 @@
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_logout"
-            android:title="Logout" />
 
         <item
             android:id="@+id/imageAnalysisFragment"
@@ -31,6 +27,10 @@
             android:icon="@android:drawable/ic_menu_gallery"
             android:title="Combos" />
 
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
 
     </group>
 </menu>
