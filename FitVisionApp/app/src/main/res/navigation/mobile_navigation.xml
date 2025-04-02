@@ -43,5 +43,13 @@
         android:name="com.example.fitvisionapp.ui.combos.ComboDetailFragment"
         android:label="Combo Detail" />
 
+    <fragment
+        android:id="@+id/tryOnFragment"
+        android:name="com.example.fitvisionapp.ui.tryon.TryOnFragment"
+        android:label="Try-On"
+        tools:layout="@layout/fragment_tryon" />
+
+
+
 
 </navigation>

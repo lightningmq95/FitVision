@@ -62,6 +62,10 @@ public interface ApiService {
     @POST("add_to_combo")
     Call<ResponseBody> addToCombo(@Body HashMap<String, String> data);
 
+    @POST("/tryon")
+    Call<ResponseBody> tryOnClothing(@Body HashMap<String, String> images);
+
+
 
 
 }
