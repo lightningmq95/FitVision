@@ -132,8 +132,12 @@ public class ComboDetailFragment extends Fragment {
                     Map<String, String> topDetails = (Map<String, String>) comboDetails.get("top");
                     Map<String, String> bottomDetails = (Map<String, String>) comboDetails.get("bottom");
 
-                    displayImageDetails(topDetails);
-                    displayImageDetails(bottomDetails);
+                    if (topDetails != null) {
+                        displayImageDetails(topDetails);
+                    }
+                    if (bottomDetails != null) {
+                        displayImageDetails(bottomDetails);
+                    }
                 } else {
                     Toast.makeText(getActivity(), "Failed to load combo!", Toast.LENGTH_SHORT).show();
                 }
