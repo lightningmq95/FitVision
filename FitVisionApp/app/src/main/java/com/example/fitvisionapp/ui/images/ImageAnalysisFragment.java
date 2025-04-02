@@ -33,6 +33,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import okhttp3.OkHttpClient;
+import java.util.concurrent.TimeUnit;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImageAnalysisFragment extends Fragment {
 
@@ -51,7 +55,7 @@ public class ImageAnalysisFragment extends Fragment {
         // ✅ Firebase User ID Check
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            userId = "test_user";  // TEMPORARY TEST VALUE
+            userId = "devastatingrpg";  // TEMPORARY TEST VALUE
             Toast.makeText(getActivity(), "WARNING: Using Test User ID!", Toast.LENGTH_SHORT).show();
         } else {
             userId = user.getUid();
@@ -79,9 +83,17 @@ public class ImageAnalysisFragment extends Fragment {
         colorSpinner.setVisibility(View.GONE);
         confirmCorrectionButton.setVisibility(View.GONE);
 
+        // Setup HTTP client with longer timeout
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+
         // Retrofit API Service
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl("http://10.0.2.2:8000/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
@@ -152,7 +164,7 @@ public class ImageAnalysisFragment extends Fragment {
 
         File file = new File(imagePath);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
         RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName);
 
         apiService.uploadImage(userId, imagePart, namePart).enqueue(new Callback<Map<String, String>>() {
@@ -162,10 +174,10 @@ public class ImageAnalysisFragment extends Fragment {
                     Map<String, String> result = response.body();
                     imageId = result.get("image_id");
                     categoryText.setText("Category: " + result.get("category"));
-                    colorText.setText("Color: " + result.get("color"));
+//                    colorText.setText("Color: " + result.get("color"));
 
                     categoryText.setVisibility(View.VISIBLE);
-                    colorText.setVisibility(View.VISIBLE);
+//                    colorText.setVisibility(View.VISIBLE);
                     correctIncorrectLayout.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getActivity(), "Server Error!", Toast.LENGTH_SHORT).show();

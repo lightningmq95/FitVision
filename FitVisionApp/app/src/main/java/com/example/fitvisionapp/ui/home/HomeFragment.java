@@ -31,6 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.concurrent.TimeUnit;
 
 public class HomeFragment extends Fragment {
 
@@ -82,6 +83,9 @@ public class HomeFragment extends Fragment {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
                 .addInterceptor(loggingInterceptor)
                 .build();
 

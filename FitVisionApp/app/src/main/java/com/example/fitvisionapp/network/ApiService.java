@@ -1,5 +1,7 @@
 package com.example.fitvisionapp.network;
 
+import com.example.fitvisionapp.models.ComboImage;
+
 import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -15,9 +17,9 @@ import retrofit2.http.GET;
 public interface ApiService {
 
     @Multipart
-    @POST("/upload-image/{userid}")
+    @POST("/upload-image/{userId}")
     Call<Map<String, String>> uploadImage(
-            @Path("userid") String userId,
+            @Path("userId") String userId,
             @Part MultipartBody.Part image,
             @Part("image_name") RequestBody imageName  // Check if backend expects String instead
     );
@@ -27,6 +29,16 @@ public interface ApiService {
 
 
     // Add this method to retrieve images
-    @GET("/get-images")  // Ensure this matches your backend endpoint
+    @GET("/images/devastatingrpg")  // Ensure this matches your backend endpoint
     Call<List<ApiImageTemp>> getImages();
+
+    @GET("/combos/devastatingrpg")
+    Call<List<String>> getCombos();
+
+    @GET("/combos/devastatingrpg/{comboName}")
+    Call<Map<String, Object>> getComboDetails(
+//            @Path("userid") String userId,
+            @Path("comboName") String comboName
+    );
+
 }
