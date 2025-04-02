@@ -31,6 +31,12 @@
             android:icon="@android:drawable/ic_menu_gallery"
             android:title="Combos" />
 
+        <item
+            android:id="@+id/nav_tryon"
+            android:title="Virtual Try On"
+            android:icon="@drawable/ic_menu_slideshow"/>
+
+
 
     </group>
 </menu>
