@@ -22,16 +22,18 @@ import com.example.fitvisionapp.network.ApiService;
 import com.example.fitvisionapp.network.ApiImageTemp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import java.util.concurrent.TimeUnit;
+import com.example.fitvisionapp.network.RetrofitClient;
 
 public class HomeFragment extends Fragment {
 
@@ -39,7 +41,7 @@ public class HomeFragment extends Fragment {
     private ClothingAdapter adapter;
     private List<ClothingItem> allItems = new ArrayList<>();
 
-    private static final String BASE_URL = "http://10.0.2.2:8000/";
+    private static final String BASE_URL = "http://10.0.2.2:5000/";
     private static final String TAG = "HomeFragment";
 
     @Override
@@ -50,10 +52,14 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerViewGrid;
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        adapter = new ClothingAdapter(new ArrayList<>());
+        String userId = getActivity().getIntent().getStringExtra("userId");
+        if (userId == null) {
+            userId = "test_user"; // Default user for testing
+        }
+
+        adapter = new ClothingAdapter(getContext(), new ArrayList<>(), userId);
         recyclerView.setAdapter(adapter);
 
-        // Setup Spinner (Dropdown)
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 getContext(), R.array.clothing_filters, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -66,13 +72,37 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "Spinner selected category: " + selectedCategory);
                 applyFilter(selectedCategory);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
-        fetchClothingItemsFromApi();
+        // Load Dummy Data for Testing
+        loadDummyData();
+
+        // Uncomment this to fetch from the API
+        // fetchClothingItemsFromApi();
 
         return root;
+    }
+
+    // Load Dummy Data for Testing
+    private void loadDummyData() {
+        List<ClothingItem> dummyItems = new ArrayList<>();
+
+        String dummyBase64Image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB";
+        Bitmap dummyBitmap = decodeBase64ToBitmap(dummyBase64Image);
+
+        dummyItems.add(new ClothingItem("Shirt 1", "Shirt", dummyBitmap));
+        dummyItems.add(new ClothingItem("Pants 1", "Pants", dummyBitmap));
+        dummyItems.add(new ClothingItem("Jacket 1", "Jacket", dummyBitmap));
+        dummyItems.add(new ClothingItem("Shoes 1", "Shoes", dummyBitmap));
+
+        allItems = dummyItems;
+        adapter.updateData(new ArrayList<>(allItems));
+
+        Log.d(TAG, "Loaded dummy data with " + allItems.size() + " items.");
     }
 
     private void fetchClothingItemsFromApi() {
@@ -83,15 +113,12 @@ public class HomeFragment extends Fragment {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(120, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .writeTimeout(120, TimeUnit.SECONDS)
                 .addInterceptor(loggingInterceptor)
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .client(client)  // attach logging
+                .client(client)  // Attach logging
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -140,7 +167,6 @@ public class HomeFragment extends Fragment {
 
     private Bitmap decodeBase64ToBitmap(String base64Str) {
         try {
-            // If the string has a prefix like "data:image/webp;base64,", remove it.
             if (base64Str.startsWith("data:")) {
                 base64Str = base64Str.substring(base64Str.indexOf(",") + 1);
             }
@@ -154,13 +180,20 @@ public class HomeFragment extends Fragment {
 
     private String convertCategoryIntToString(int cat) {
         switch (cat) {
-            case 0: return "Hat";
-            case 1: return "Shirt";
-            case 2: return "Pants";
-            case 3: return "Jacket";
-            case 4: return "Shoes";
-            case 5: return "Shorts";
-            default: return "Other";
+            case 0:
+                return "Hat";
+            case 1:
+                return "Shirt";
+            case 2:
+                return "Pants";
+            case 3:
+                return "Jacket";
+            case 4:
+                return "Shoes";
+            case 5:
+                return "Shorts";
+            default:
+                return "Other";
         }
     }
 
@@ -177,6 +210,29 @@ public class HomeFragment extends Fragment {
         }
         Log.d(TAG, "Filtered " + filtered.size() + " items for category: " + category);
         adapter.updateData(filtered);
+    }
+
+    private void sendAddToComboRequest(String userId, String comboName, String clothingId, String category) {
+        HashMap<String, String> requestData = new HashMap<>();
+        requestData.put("userId", userId);
+        requestData.put("comboName", comboName);
+        requestData.put("clothingId", clothingId);
+        requestData.put("category", category);
+
+        ApiService apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
+        Call<ResponseBody> call = apiService.addToCombo(requestData);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, response.isSuccessful() ? "Item added to combo!" : "Failed: " + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "Request failed", t);
+            }
+        });
     }
 
     @Override

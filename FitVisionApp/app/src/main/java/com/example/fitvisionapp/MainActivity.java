@@ -1,8 +1,6 @@
 package com.example.fitvisionapp;
-import com.example.fitvisionapp.ui.images.ImageAnalysisFragment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -23,6 +22,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.example.fitvisionapp.databinding.ActivityMainBinding;
+import com.example.fitvisionapp.ui.tryon.TryOnFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,16 +40,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Bypass login by setting user as "logged in"
-//        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-//        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
-//        if (!isLoggedIn) {
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putBoolean("isLoggedIn", true); // Mark user as logged in
-//            editor.apply();
-//        }
-
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -164,17 +154,16 @@ public class MainActivity extends AppCompatActivity {
                     // Handle logout
                     logoutUser();
                     return true;
-                }
-                else if (id == R.id.imageAnalysisFragment) {
+                } else if (id == R.id.imageAnalysisFragment) {
                     navController.navigate(R.id.imageAnalysisFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
-                }
-
-                else if (id == R.id.navigation_combos) {
+                } else if (id == R.id.navigation_combos) {
                     navController.navigate(R.id.comboGridFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
+                } else if (id == R.id.nav_tryon) {
+                    navController.navigate(R.id.tryOnFragment); // Navigate using Navigation Component
                 }
 
 
@@ -213,4 +202,6 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
 }

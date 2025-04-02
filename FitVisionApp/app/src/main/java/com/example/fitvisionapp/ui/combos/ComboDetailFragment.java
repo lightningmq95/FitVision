@@ -28,12 +28,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import okhttp3.OkHttpClient;
-
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ComboDetailFragment extends Fragment {
 
@@ -54,17 +48,9 @@ public class ComboDetailFragment extends Fragment {
             comboName = args.getString("comboName");
         }
 
-        // Setup HTTP client with longer timeout
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .build();
-
         // Initialize API
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/")  // Change if backend is hosted online
-                .client(client)
+                .baseUrl("http://10.0.2.2:5000/")  // Change if backend is hosted online
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
@@ -77,66 +63,39 @@ public class ComboDetailFragment extends Fragment {
         return root;
     }
 
-//    private void fetchComboDetails() {
-//        apiService.getComboDetails(comboName).enqueue(new Callback<List<ComboImage>>() {
-//            @Override
-//            public void onResponse(Call<List<ComboImage>> call, Response<List<ComboImage>> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    for (ComboImage item : response.body()) {
-//                        View imageViewLayout = LayoutInflater.from(getActivity()).inflate(R.layout.item_combo_image, imageContainer, false);
-//                        ImageView imageView = imageViewLayout.findViewById(R.id.imageView);
-//                        TextView categoryText = imageViewLayout.findViewById(R.id.categoryText);
-//
-//                        categoryText.setText(item.category);
-//
-//                        if (item.imageData != null && !item.imageData.isEmpty()) {
-//                            if (item.imageData.startsWith("http")) {
-//                                // Load from URL
-//                                Glide.with(getActivity()).load(item.imageData).into(imageView);
-//                            } else {
-//                                // Load from Base64 safely
-//                                try {
-//                                    byte[] decodedString = Base64.decode(item.imageData, Base64.DEFAULT);
-//                                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                                    imageView.setImageBitmap(decodedByte);
-//                                } catch (IllegalArgumentException e) {
-//                                    Toast.makeText(getActivity(), "Invalid image data!", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        } else {
-//                            // Set placeholder image if imageData is missing
-//                            imageView.setImageResource(android.R.drawable.ic_menu_gallery);
-//
-//                        }
-//
-//                        imageContainer.addView(imageViewLayout);
-//                    }
-//                } else {
-//                    Toast.makeText(getActivity(), "Failed to load combo!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<ComboImage>> call, Throwable t) {
-//                Toast.makeText(getActivity(), "Connection failed!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
     private void fetchComboDetails() {
-        apiService.getComboDetails(comboName).enqueue(new Callback<Map<String, Object>>() {
+        apiService.getComboDetails(userId, comboName).enqueue(new Callback<List<ComboImage>>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+            public void onResponse(Call<List<ComboImage>> call, Response<List<ComboImage>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Map<String, Object> comboDetails = response.body();
-                    Map<String, String> topDetails = (Map<String, String>) comboDetails.get("top");
-                    Map<String, String> bottomDetails = (Map<String, String>) comboDetails.get("bottom");
+                    for (ComboImage item : response.body()) {
+                        View imageViewLayout = LayoutInflater.from(getActivity()).inflate(R.layout.item_combo_image, imageContainer, false);
+                        ImageView imageView = imageViewLayout.findViewById(R.id.imageView);
+                        TextView categoryText = imageViewLayout.findViewById(R.id.categoryText);
 
-                    if (topDetails != null) {
-                        displayImageDetails(topDetails);
-                    }
-                    if (bottomDetails != null) {
-                        displayImageDetails(bottomDetails);
+                        categoryText.setText(item.category);
+
+                        if (item.imageData != null && !item.imageData.isEmpty()) {
+                            if (item.imageData.startsWith("http")) {
+                                // Load from URL
+                                Glide.with(getActivity()).load(item.imageData).into(imageView);
+                            } else {
+                                // Load from Base64 safely
+                                try {
+                                    byte[] decodedString = Base64.decode(item.imageData, Base64.DEFAULT);
+                                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                                    imageView.setImageBitmap(decodedByte);
+                                } catch (IllegalArgumentException e) {
+                                    Toast.makeText(getActivity(), "Invalid image data!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            // Set placeholder image if imageData is missing
+                            imageView.setImageResource(android.R.drawable.ic_menu_gallery);
+
+                        }
+
+                        imageContainer.addView(imageViewLayout);
                     }
                 } else {
                     Toast.makeText(getActivity(), "Failed to load combo!", Toast.LENGTH_SHORT).show();
@@ -144,41 +103,9 @@ public class ComboDetailFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+            public void onFailure(Call<List<ComboImage>> call, Throwable t) {
                 Toast.makeText(getActivity(), "Connection failed!", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-    private void displayImageDetails(Map<String, String> imageDetails) {
-        View imageViewLayout = LayoutInflater.from(getActivity()).inflate(R.layout.item_combo_image, imageContainer, false);
-        ImageView imageView = imageViewLayout.findViewById(R.id.imageView);
-        TextView categoryText = imageViewLayout.findViewById(R.id.categoryText);
-
-        categoryText.setText(imageDetails.get("classification"));
-
-        String imageData = imageDetails.get("image_data");
-        if (imageData != null && !imageData.isEmpty()) {
-            if (imageData.startsWith("http")) {
-                // Load from URL
-                Glide.with(getActivity()).load(imageData).into(imageView);
-            } else {
-                // Load from Base64 safely
-                try {
-                    byte[] decodedString = Base64.decode(imageData, Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    imageView.setImageBitmap(decodedByte);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(getActivity(), "Invalid image data!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else {
-            // Set placeholder image if imageData is missing
-            imageView.setImageResource(android.R.drawable.ic_menu_gallery);
-        }
-
-        imageContainer.addView(imageViewLayout);
-    }
-
 }
