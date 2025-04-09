@@ -39,6 +39,7 @@ This project is containerized using Docker and Docker Compose.
 
 - [Docker](https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&utm_medium=webreferral&utm_campaign=dd-smartbutton&utm_location=module)
 - [Docker Compose](https://docs.docker.com/compose/)
+- [Android Studio](https://redirector.gvt1.com/edgedl/android/studio/install/2024.3.1.14/android-studio-2024.3.1.14-windows.exe)
 
 ### 📦 Setup Steps
 
@@ -58,6 +59,38 @@ This project is containerized using Docker and Docker Compose.
 3. **Check environment files Ensure the .env and hadoop.env files are present and configured. These are already included in the repo, but feel free to modify as needed.**
 
 4. **Build and start the containers**
+
    ```bash
     docker-compose up --build
    ```
+
+5. **Open Android Studio and open the FitVisionApp Project**
+
+6. **Run the requirements.txt File**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+7. **Navigate to new Folder**
+
+   ```bash
+   cd ..
+   cd mainCycle/new/
+   ```
+
+8. **Put the cloth image and image of the person in datasets/test folder**
+
+   ```bash
+    cd datasets/test/
+   ```
+
+9. **Inferencing**
+   Update the cloth image and image of the person names in the code and run it.
+
+   ```bash
+    python inferencingMain.py
+   ```
+
+10. **Results**
+    The results will be saved in the results/res folder.

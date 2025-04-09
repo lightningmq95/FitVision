@@ -1,0 +1,11 @@
+# PyTorch 2.3.1 with CUDA 11.8 support
+torch==2.3.1+cu118
+torchvision==0.18.1+cu118
+torchaudio==2.3.1+cu118
+
+# Cassandra and HBase clients
+cassandra-driver==3.29.1
+happybase==1.2.0
+
+# Use pip from PyTorch's custom index
+--extra-index-url https://download.pytorch.org/whl/cu118
