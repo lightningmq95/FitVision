@@ -7,5 +7,9 @@ torchaudio==2.3.1+cu118
 cassandra-driver==3.29.1
 happybase==1.2.0
 
+# FastAPI
+fastapi==0.110.0
+uvicorn==0.30.1
+
 # Use pip from PyTorch's custom index
 --extra-index-url https://download.pytorch.org/whl/cu118
