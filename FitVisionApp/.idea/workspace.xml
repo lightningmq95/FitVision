@@ -16,12 +16,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f9a7f68f-1b39-4114-9277-d7f8cca31577" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Backend/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Backend/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../Docker/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/executionHistory/executionHistory.lock" afterDir="false" />
-    </list>
+    <list default="true" id="f9a7f68f-1b39-4114-9277-d7f8cca31577" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
