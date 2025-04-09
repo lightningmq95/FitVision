@@ -71,13 +71,13 @@ This project is containerized using Docker and Docker Compose.
 6. **Run the requirements.txt File**
 
    ```bash
+   cd ..
    pip install -r requirements.txt
    ```
 
 7. **Navigate to new Folder**
 
    ```bash
-   cd ..
    cd mainCycle/new/
    ```
 
