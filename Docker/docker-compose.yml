@@ -6,8 +6,8 @@ services:
     container_name: zookeeper
     image: docker.io/bitnami/zookeeper:3.9
     ports:
-      - '2181:2181'
-      - '8091:8080'
+      - "2181:2181"
+      - "8091:8080"
     volumes:
       - ${ZOOKEEPER_DATA_DIR}:/bitnami/zookeeper
     environment:
@@ -16,52 +16,10 @@ services:
     networks:
       - clothGAN-network
 
-  spark:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile.spark
-    # image: docker.io/bitnami/spark:3.5.3
-    image: clothgan-spark
-    environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
-    ports:
-      - '8080:8080'
-    volumes:
-      - ${SPARK_JOBS_DIR}:/opt/spark-jobs
-      - ${SPARK_MODELS_DIR}:/opt/spark-models
-    networks:
-      - clothGAN-network
-
-  spark-worker:
-    # image: docker.io/bitnami/spark:3.5.3
-    image: clothgan-spark
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
-    volumes:
-      - ${SPARK_JOBS_DIR}:/opt/spark-jobs
-      - ${SPARK_MODELS_DIR}:/opt/spark-models
-    networks:
-      - clothGAN-network
-    deploy:
-      replicas: ${SPARK_WORKER_COUNT:-1}
-
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: "bitnami/kafka:latest"
     ports:
-      - '9092:9092'
+      - "9092:9092"
     volumes:
       - ${KAFKA_DATA_DIR}:/bitnami/kafka
     environment:
@@ -80,7 +38,7 @@ services:
     ports:
       - 8090:8080
     environment:
-      DYNAMIC_CONFIG_ENABLED: 'true'
+      DYNAMIC_CONFIG_ENABLED: "true"
     depends_on:
       - kafka
     networks:
@@ -202,10 +160,10 @@ services:
   cassandra:
     container_name: cassandra
     hostname: cassandra
-    image: 'bitnami/cassandra:latest'
+    image: "bitnami/cassandra:latest"
     ports:
-      - '9042:9042'
-      - '9160:9160'
+      - "9042:9042"
+      - "9160:9160"
     networks:
       - clothGAN-network
     volumes:

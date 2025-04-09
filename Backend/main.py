@@ -12,7 +12,7 @@ import happybase
 
 app = FastAPI()
 # Load the saved model
-model = tf.keras.models.load_model('model.keras')
+model = tf.keras.models.load_model('model')
 CLASS_NAMES = ['dress', 'pants', 'shirts']  # Replace with your actual class names
 
 @app.post("/upload-image/{userId}")
