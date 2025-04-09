@@ -64,7 +64,9 @@ This project is containerized using Docker and Docker Compose.
     docker-compose up --build
    ```
 
-5. **Open Android Studio and open the FitVisionApp Project**
+5. **Open the FitVisionApp Project on Android Studio**
+   Go to File -> Sync Projects with Gradle Files
+   Click on the green run button to build the app.
 
 6. **Run the requirements.txt File**
 
@@ -85,12 +87,12 @@ This project is containerized using Docker and Docker Compose.
     cd datasets/test/
    ```
 
-9. **Inferencing**
+9. **Inferencing:**
    Update the cloth image and image of the person names in the code and run it.
 
    ```bash
     python inferencingMain.py
    ```
 
-10. **Results**
+10. **Results:**
     The results will be saved in the results/res folder.
