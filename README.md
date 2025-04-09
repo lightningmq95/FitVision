@@ -56,7 +56,7 @@ This project is containerized using Docker and Docker Compose.
     cd Docker
    ```
 
-3. **Check environment files Ensure the .env and hadoop.env files are present and configured. These are already included in the repo, but feel free to modify as needed.**
+3. **Check environment files: Ensure the .env and hadoop.env files are present and configured. These are already included in the repo, but feel free to modify as needed.**
 
 4. **Build and start the containers**
 
