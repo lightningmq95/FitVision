@@ -97,7 +97,7 @@ This project is containerized using Docker and Docker Compose.
     Update the cloth image and image of the person names in the code and run it.
 
 ```bash
- python inferencingMain.py
+    python inferencingMain.py
 ```
 
 11. **Results:**
