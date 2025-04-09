@@ -18,7 +18,6 @@ This project implements a **virtual try-on system** that maps standalone clothin
 - **GPU**:
 
   - Minimum: 4 GB VRAM (e.g., NVIDIA GTX 1050 Ti)
-  - Recommended: 4-core GPU for faster processing
 
 - **CPU**: Quad-core processor (Intel i5 / AMD Ryzen 5 or better)
 
