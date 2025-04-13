@@ -57,3 +57,5 @@ src/main/Database/Temp/images
 mainCycle/
 FitVisionApp/.gradle/8.11.1/executionHistory/executionHistory.bin
 FitVisionApp/.gradle/8.11.1/executionHistory/executionHistory.bin
+
+data/

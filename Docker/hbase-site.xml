@@ -47,4 +47,5 @@ hbase.regionserver.info.bindAddress
   </property>
 -->
 
+
 </configuration>

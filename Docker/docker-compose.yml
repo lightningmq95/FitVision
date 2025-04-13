@@ -180,21 +180,20 @@ services:
     container_name: hbase
     hostname: hbase
     ports:
-      # - 2181:2181 # ZooKeeper
-      # - 8080:8080 # HBase Master Web UI
-      - 8085:8085 # HBase RegionServer Web UI
-      - 9090:9090 # HBase Thrift Server
-      - 9095:9095 # HBase REST Server
-      - 16000:16000 # HBase Master API
-      - 16010:16010 # HBase Master Web UI (alternate)
-      - 16020:16020 # HBase RegionServer API
-      - 16030:16030 # HBase RegionServer Web UI
+      - "8080:8080" # HBase REST API
+      - "9090:9090" # Thrift API
+      - "9095:9095" # Thrift2 API
+      - "16010:16010" # HBase Master Web UI
     environment:
-      - HBASE_MANAGES_ZK=false # HBase manages its own ZooKeeper\
+      - HBASE_MANAGE_ZK=false # Tells HBase not to start its own Zookeeper
+      - HBASE_ZOOKEEPER_QUORUM=zookeeper-container # Replace with actual Zookeeper container name
+      - HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT=2181
+      - HBASE_ROOTDIR=/data/hbase # Ensures HBase data is persistent
+      - HBASE_CLUSTER_DISTRIBUTED=true # Runs in distributed mode, required for external ZK
+
     depends_on:
       - zookeeper
     volumes:
-      - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml
       - hbase_data:/data
     networks:
       - clothGAN-network
@@ -216,6 +215,30 @@ services:
       - CASSANDRA_LISTEN_ADDRESS=0.0.0.0
       - CASSANDRA_BROADCAST_ADDRESS=cassandra
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
+  # hive-server:
+  #   image: bde2020/hive:2.3.2-postgresql-metastore
+  #   env_file:
+  #     - ./hadoop-hive.env
+  #   environment:
+  #     HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+  #     SERVICE_PRECONDITION: "hive-metastore:9083"
+  #   ports:
+  #     - "10000:10000"
+  # hive-metastore:
+  #   image: bde2020/hive:2.3.2-postgresql-metastore
+  #   env_file:
+  #     - ./hadoop-hive.env
+  #   command: /opt/hive/bin/hive --service metastore
+  #   environment:
+  #     SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+  #   ports:
+  #     - "9083:9083"
+  # hive-metastore-postgresql:
+  #   image: bde2020/hive-metastore-postgresql:2.3.0
+  # presto-coordinator:
+  #   image: shawnzhu/prestodb:0.181
+  #   ports:
+  #     - "8080:8080"
 
 volumes:
   hadoop_namenode:
@@ -228,5 +251,6 @@ volumes:
 
 networks:
   clothGAN-network:
+    external: true
     name: clothGAN-network
     driver: bridge

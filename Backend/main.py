@@ -7,7 +7,6 @@ from tensorflow.keras.preprocessing import image
 from typing import List, Optional
 from pathlib import Path
 import base64
-import happybase
 
 
 app = FastAPI()
@@ -798,4 +797,52 @@ async def get_combo_details(user_id: str, combo_name: str):
                 os.remove(temp_file)
                 logger.info(f"Cleaned up temp file: {temp_file}")
 
+# For path /generate, take 2 file images as input (cloth, person) and return generated 'worn' image 
+# (for now return 2nd image as it is)
+
+@app.post("/generate")
+async def generate_image(
+    userId: str,
+    file: UploadFile = File(...),
+    file2: UploadFile = File(...)
+):
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    if not file2.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    # Extract file extension from original filename
+    file_extension = Path(file.filename).suffix.lower()
+    if not file_extension:
+        file_extension = '.jpg'  # default extension if none provided
+    file_extension2 = Path(file2.filename).suffix.lower()
+    if not file_extension2:
+        file_extension2 = '.jpg'
+
+    image_id = str(uuid.uuid4())
+    local_path = f"tmp/{image_id}{file_extension}"
+    local_path2 = f"tmp/{image_id}{file_extension2}"
+    # Ensure tmp directory exists
+    os.makedirs("tmp", exist_ok=True)
+    # Save uploaded file
+    with open(local_path, "wb") as f:
+        f.write(await file.read())
+    with open(local_path2, "wb") as f:
+        f.write(await file2.read())
+    try:
+        print('hi')
+
+        
+        return {
+            "status": "completed",
+            
+        }
+    except subprocess.CalledProcessError as e:
+        if os.path.exists(local_path):
+            os.remove(local_path)
+        if os.path.exists(local_path2):
+            os.remove(local_path2)
+        raise HTTPException(status_code=500, detail=f"Processing failed: {e.stderr}")
 
