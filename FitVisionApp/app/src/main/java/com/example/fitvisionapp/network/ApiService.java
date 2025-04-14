@@ -39,7 +39,7 @@ public interface ApiService {
     Call<Map<String, String>> sendCorrection(@Body Map<String, String> data);
 
 
-    @GET("/get-images")  // Ensure this matches your backend endpoint
+    @GET("/get-images")
     Call<List<ApiImageTemp>> getImages();
 
     @GET("/getCombos/{userid}")
@@ -64,6 +64,15 @@ public interface ApiService {
 
     @POST("/tryon")
     Call<ResponseBody> tryOnClothing(@Body HashMap<String, String> images);
+
+    @POST("/adjust_lighting")
+    Call<ResponseBody> adjustLighting(@Body HashMap<String, String> requestData);
+
+    @POST("/detect-faces")
+    Call<List<String>> detectFaces(@Body String base64Image);
+
+    @POST("/tryon-face")
+    Call<ResponseBody> tryOnSelectedFace(@Body String base64SelectedFace);
 
 
 

@@ -152,7 +152,7 @@ public class ImageAnalysisFragment extends Fragment {
 
         File file = new File(imagePath);
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
         RequestBody namePart = RequestBody.create(MediaType.parse("text/plain"), clothingName);
 
         apiService.uploadImage(userId, imagePart, namePart).enqueue(new Callback<Map<String, String>>() {

@@ -158,13 +158,25 @@ public class MainActivity extends AppCompatActivity {
                     navController.navigate(R.id.imageAnalysisFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
-                } else if (id == R.id.navigation_combos) {
+                } else if (id == R.id.comboDetailFragment) {
                     navController.navigate(R.id.comboGridFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
-                } else if (id == R.id.nav_tryon) {
-                    navController.navigate(R.id.tryOnFragment); // Navigate using Navigation Component
+                } else if (id == R.id.tryOnFragment) {
+                    navController.navigate(R.id.tryOnFragment);
                 }
+                else if (id == R.id.nav_lighting) {
+                    navController.navigate(R.id.lightingAdjustmentFragment);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
+                else if (id == R.id.nav_group_tryon) {
+                    navController.navigate(R.id.groupTryOnFragment);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
+
+
 
 
                 // Default Navigation Component behavior

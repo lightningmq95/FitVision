@@ -49,6 +49,17 @@
         android:label="Try-On"
         tools:layout="@layout/fragment_tryon" />
 
+    <fragment
+        android:id="@+id/lightingAdjustmentFragment"
+        android:name="com.example.fitvisionapp.ui.lighting.LightingAdjustmentFragment"
+        android:label="Lighting Adjustment"
+        tools:layout="@layout/fragment_lighting_adjustment" />
+
+    <fragment
+        android:id="@+id/groupTryOnFragment"
+        android:name="com.example.fitvisionapp.ui.grouptryon.GroupTryOnFragment"
+        android:label="Group Try-On"
+        tools:layout="@layout/fragment_group_tryon" />
 
 
 
