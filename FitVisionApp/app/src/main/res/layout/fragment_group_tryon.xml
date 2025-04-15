@@ -8,17 +8,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Button android:id="@+id/btnUpload"
+        <!-- Upload Group Image -->
+        <Button
+            android:id="@+id/btnUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Upload Group Image" />
 
-        <ImageView android:id="@+id/inputImage"
+        <!-- Preview of Uploaded Group Image -->
+        <ImageView
+            android:id="@+id/inputImage"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
-            android:layout_marginTop="10dp" />
+            android:contentDescription="Uploaded group image" />
 
+        <!-- Label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,31 +32,51 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp" />
 
-        <LinearLayout
-            android:id="@+id/facesContainer"
+        <!-- Scrollable Face Images from Backend -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:scrollbars="horizontal">
 
+            <LinearLayout
+                android:id="@+id/facesContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Submit Face Selection -->
+        <Button
+            android:id="@+id/btnSubmitSelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Submit Selected Face" />
+
+        <!-- Label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Result"
+            android:text="Final Result"
             android:textStyle="bold"
             android:layout_marginTop="16dp" />
 
-        <ImageView android:id="@+id/resultImage"
+        <!-- Final Result Image after Backend Processing -->
+        <ImageView
+            android:id="@+id/resultImage"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
-            android:layout_marginTop="10dp" />
+            android:contentDescription="Result image after face swap or try-on" />
 
+        <!-- Back Button -->
         <Button
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            android:text="Back" />
     </LinearLayout>
 </ScrollView>

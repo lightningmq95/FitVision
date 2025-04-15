@@ -158,15 +158,18 @@ public class MainActivity extends AppCompatActivity {
                     navController.navigate(R.id.imageAnalysisFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
-                } else if (id == R.id.comboDetailFragment) {
+                } else if (id == R.id.navigation_combos) {
                     navController.navigate(R.id.comboGridFragment);
                     binding.drawerLayout.closeDrawers();
                     return true;
-                } else if (id == R.id.tryOnFragment) {
-                    navController.navigate(R.id.tryOnFragment);
-                    return true;
-
                 }
+                else if (id == R.id.nav_tryon) {
+                    navController.navigate(R.id.tryOnFragment);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
+
+
                 else if (id == R.id.nav_lighting) {
                     navController.navigate(R.id.lightingAdjustmentFragment);
                     binding.drawerLayout.closeDrawers();

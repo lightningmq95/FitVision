@@ -130,8 +130,9 @@ public class TryOnFragment extends Fragment {
         ApiService apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
         HashMap<String, String> requestData = new HashMap<>();
-        requestData.put("user_image_name", userImageName);
+
         requestData.put("clothing_image_name", clothingImageName);
+        requestData.put("user_image_name", userImageName);
 
         Call<ResponseBody> call = apiService.tryOnClothing(requestData);
         call.enqueue(new Callback<ResponseBody>() {
