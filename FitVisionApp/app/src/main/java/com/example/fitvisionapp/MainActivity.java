@@ -164,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (id == R.id.tryOnFragment) {
                     navController.navigate(R.id.tryOnFragment);
+                    return true;
+
                 }
                 else if (id == R.id.nav_lighting) {
                     navController.navigate(R.id.lightingAdjustmentFragment);
@@ -175,6 +177,12 @@ public class MainActivity extends AppCompatActivity {
                     binding.drawerLayout.closeDrawers();
                     return true;
                 }
+                else if (id == R.id.nav_cv_effect) {
+                    navController.navigate(R.id.nav_cv_effect);
+                    binding.drawerLayout.closeDrawers();
+                    return true;
+                }
+
 
 
 

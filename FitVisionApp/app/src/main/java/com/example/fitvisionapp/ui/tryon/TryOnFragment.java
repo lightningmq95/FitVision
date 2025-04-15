@@ -2,10 +2,12 @@ package com.example.fitvisionapp.ui.tryon;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +27,6 @@ import com.example.fitvisionapp.network.RetrofitClient;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 
@@ -42,7 +43,7 @@ public class TryOnFragment extends Fragment {
 
     private ImageView imageUser, imageClothing, imageResult;
     private Button btnTryOn, btnBack;
-    private String userBase64 = null, clothingBase64 = null;
+    private String userImageName = null, clothingImageName = null;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class TryOnFragment extends Fragment {
 
         // Send images for try-on
         btnTryOn.setOnClickListener(v -> {
-            if (userBase64 != null && clothingBase64 != null) {
+            if (userImageName != null && clothingImageName != null) {
                 sendTryOnRequest();
             } else {
                 Toast.makeText(getContext(), "Select both images first!", Toast.LENGTH_SHORT).show();
@@ -91,14 +92,15 @@ public class TryOnFragment extends Fragment {
             try {
                 InputStream inputStream = requireActivity().getContentResolver().openInputStream(imageUri);
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                String base64Image = encodeToBase64(bitmap);
+
+                String imageName = getFileNameFromUri(imageUri);
 
                 if (requestCode == PICK_USER_IMAGE) {
                     imageUser.setImageBitmap(bitmap);
-                    userBase64 = base64Image;
+                    userImageName = imageName;
                 } else if (requestCode == PICK_CLOTHING_IMAGE) {
                     imageClothing.setImageBitmap(bitmap);
-                    clothingBase64 = base64Image;
+                    clothingImageName = imageName;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error selecting image", e);
@@ -106,21 +108,30 @@ public class TryOnFragment extends Fragment {
         }
     }
 
-    // Convert Bitmap to Base64
-    private String encodeToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    // Get file name from Uri
+    private String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = requireActivity().getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex >= 0) result = cursor.getString(nameIndex);
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getLastPathSegment();
+        }
+        return result;
     }
 
-    // Send images to backend
+    // Send image names to backend
     private void sendTryOnRequest() {
         ApiService apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
         HashMap<String, String> requestData = new HashMap<>();
-        requestData.put("user_image", userBase64);
-        requestData.put("clothing_image", clothingBase64);
+        requestData.put("user_image_name", userImageName);
+        requestData.put("clothing_image_name", clothingImageName);
 
         Call<ResponseBody> call = apiService.tryOnClothing(requestData);
         call.enqueue(new Callback<ResponseBody>() {
@@ -128,18 +139,12 @@ public class TryOnFragment extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
-                        // Get response as a JSON string
                         String responseString = response.body().string();
-                        Log.d(TAG, "Server Response: " + responseString.substring(0, Math.min(100, responseString.length())));
-
-                        // Extract "output_image" from JSON
                         JSONObject jsonResponse = new JSONObject(responseString);
                         String base64Image = jsonResponse.getString("output_image");
 
-                        // Convert Base64 to Bitmap
                         byte[] imageBytes = Base64.decode(base64Image, Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-
                         imageResult.setImageBitmap(bitmap);
                         Toast.makeText(getContext(), "Try-On Success!", Toast.LENGTH_SHORT).show();
 
@@ -152,15 +157,10 @@ public class TryOnFragment extends Fragment {
                 }
             }
 
-
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-
 }

@@ -65,6 +65,7 @@ public interface ApiService {
     @POST("/tryon")
     Call<ResponseBody> tryOnClothing(@Body HashMap<String, String> images);
 
+
     @POST("/adjust_lighting")
     Call<ResponseBody> adjustLighting(@Body HashMap<String, String> requestData);
 
@@ -74,6 +75,8 @@ public interface ApiService {
     @POST("/tryon-face")
     Call<ResponseBody> tryOnSelectedFace(@Body String base64SelectedFace);
 
+    @POST("/cvtransform")
+    Call<ResponseBody> cvTransform(@Body Map<String, String> body);
 
 
 

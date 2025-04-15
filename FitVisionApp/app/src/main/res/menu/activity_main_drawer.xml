@@ -8,14 +8,14 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+<!--        <item-->
+<!--            android:id="@+id/nav_gallery"-->
+<!--            android:icon="@drawable/ic_menu_gallery"-->
+<!--            android:title="@string/menu_gallery" />-->
+<!--        <item-->
+<!--            android:id="@+id/nav_slideshow"-->
+<!--            android:icon="@drawable/ic_menu_slideshow"-->
+<!--            android:title="@string/menu_slideshow" />-->
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
@@ -26,26 +26,32 @@
             android:icon="@drawable/ic_photo"
             android:title="Image Analysis" />
 
-<!--        <item-->
-<!--            android:id="@+id/navigation_combos"-->
-<!--            android:icon="@android:drawable/ic_menu_gallery"-->
-<!--            android:title="Combos" />-->
+        <item
+            android:id="@+id/navigation_combos"
+            android:icon="@android:drawable/ic_menu_gallery"
+            android:title="Combos" />
 
-<!--        <item-->
-<!--            android:id="@+id/nav_tryon"-->
-<!--            android:title="Virtual Try On"-->
-<!--            android:icon="@drawable/ic_menu_slideshow"/>-->
+        <item
+            android:id="@+id/nav_tryon"
+            android:title="Virtual Try On"
+            android:icon="@drawable/ic_menu_slideshow"/>
 
 
         <item
             android:id="@+id/nav_lighting"
-            android:icon="@drawable/common_google_signin_btn_icon_light_normal"
+            android:icon="@drawable/light"
             android:title="Lighting Adjustment" />
 
         <item
             android:id="@+id/nav_group_tryon"
             android:title="Group Try-On"
             android:icon="@drawable/ic_menu_gallery" />
+
+        <item
+            android:id="@+id/nav_cv_effect"
+            android:title="CV Effects"
+            android:icon="@drawable/travel" />
+
 
 
 
