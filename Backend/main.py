@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 import uuid, os, subprocess
+from ultralytics import YOLO
+import cv2
 import json
 import tensorflow as tf
 import numpy as np
@@ -12,6 +14,9 @@ import base64
 app = FastAPI()
 # Load the saved model
 model = tf.keras.models.load_model('model.keras')
+# Load a pretrained YOLO model
+yolo_model = YOLO("yolo11n.pt")
+vton_model = yolo_model
 CLASS_NAMES = ['dress', 'pants', 'shirts']  # Replace with your actual class names
 
 @app.post("/upload-image/{userId}")
@@ -845,4 +850,252 @@ async def generate_image(
         if os.path.exists(local_path2):
             os.remove(local_path2)
         raise HTTPException(status_code=500, detail=f"Processing failed: {e.stderr}")
+
+# Input an image uploaded by user, and then return a list of base64 encoded images
+@app.post("/generate/extract")
+async def generate_image_extract(
+    file: UploadFile = File(...),
+):
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    # Extract file extension from original filename
+    file_extension = Path(file.filename).suffix.lower()
+    if not file_extension:
+        file_extension = '.jpg'
+
+    # Read the uploaded file into a NumPy array
+    file_bytes = await file.read()
+    np_img = np.frombuffer(file_bytes, np.uint8)
+    image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+
+    # Zero padding on image
+    padded_img = zero_padding(image, 100)
+
+    persons = extract_people(padded_img, file_extension)
+    
+    return {
+        "status": "completed",
+        "persons": persons
+    }
+
+
+# Input 2 images uploaded by user (cloth and person) and return a single base64 encoded image
+@app.post("/generate/tryon")
+async def generate_image_tryon(
+    file: UploadFile = File(...),
+    file2: UploadFile = File(...)
+):
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    if not file2.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    # Extract file extension from original filename
+    file_extension = Path(file.filename).suffix.lower()
+    if not file_extension:
+        file_extension = '.jpg'
+    file_extension2 = Path(file2.filename).suffix.lower()   
+    if not file_extension2:
+        file_extension2 = '.jpg'
+
+    result_img = vton_model(file, file2)
+    # Convert the result image to base64
+    _, buffer = cv2.imencode(file_extension, result_img)
+    result_image_base64 = base64.b64encode(buffer).decode()
+    return {
+        "status": "completed",
+        "result_image": result_image_base64
+    }
+
+
+def zero_padding(img: np.ndarray, padding: int) -> np.ndarray:
+    """
+    Apply zero padding to the image.
+    
+    Args:
+        img (numpy.ndarray): Input image.
+        padding (int): Amount of padding to add to each side.
+        
+    Returns:
+        numpy.ndarray: Padded image.
+    """
+    # Get the shape of the original image
+    h, w, c = img.shape
+
+    # Calculate the new dimensions with padding
+    new_h = h + 2 * padding
+    new_w = w + 2 * padding
+
+    # Create a new image with the new dimensions
+    padded_img = cv2.resize(img, (new_w, new_h))
+    # Fill the new image with zeros (black)
+    padded_img.fill(0)
+
+    # Copy the original image into the center of the new image
+    padded_img[padding:padding + h, padding:padding + w] = img
+    return padded_img
+
+def extract_people(img: np.ndarray, file_extension: str) -> list:
+    """
+    Extract Individual people from an image usign YOLO model
+
+    Args:
+        img (numpy.ndarray): Input image.
+        file_extension (str): File extension for the output images.
+    
+    Returns:
+        list: List of base64 encoded images of individual persons.
+    """
+
+        # Perform inference on the image
+    results = yolo_model.predict(source=img, conf=0.5)
+    # Filter results to only include persons (class ID 0)
+    person_detections = [box for box in results[0].boxes if box.cls == 0]
+
+    offset = 50
+    # Display individual extracted people
+    persons = []
+    for box in person_detections:
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+        x1 -= offset
+        y1 -= offset
+        x2 += offset
+        y2 += offset
+        person_image = img[y1:y2, x1:x2]
+        person_image = cv2.cvtColor(person_image, cv2.COLOR_BGR2RGB)
+        _, buffer = cv2.imencode(file_extension, person_image)
+        person_image_base64 = base64.b64encode(buffer).decode()
+        persons.append(person_image_base64)
+    
+    return persons
+
+# Lighting adjustment
+def generate_cloth_mask(image):
+    img = image.copy()
+    Z = img.reshape((-1, 3)).astype(np.float32)
+
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    K = 3
+    _, labels, centers = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+
+    centers = np.uint8(centers)
+    segmented = centers[labels.flatten()].reshape(image.shape)
+
+    counts = np.bincount(labels.flatten())
+    main_label = np.argmax(counts[1:]) + 1 if len(counts) > 1 else 0
+    mask = (labels.flatten() == main_label).astype(np.uint8) * 255
+    mask = mask.reshape(image.shape[:2])
+
+    kernel = np.ones((5, 5), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    cleaned_mask = np.zeros_like(mask)
+    for i in range(1, num_labels):
+        if stats[i, cv2.CC_STAT_AREA] >= 500:
+            cleaned_mask[labels == i] = 255
+
+    return cleaned_mask
+
+
+def apply_effect_on_shirt(image, mask, condition="sunny", intensity=1.0):
+    shirt_region = cv2.bitwise_and(image, image, mask=mask)
+    modified = shirt_region.copy()
+    h, w = mask.shape[:2]
+
+    if condition == "sunny":
+        modified = cv2.convertScaleAbs(shirt_region, alpha=1.35 * intensity, beta=50)
+        hsv = cv2.cvtColor(modified, cv2.COLOR_BGR2HSV)
+        hsv[:, :, 1] = np.clip(hsv[:, :, 1] + 45 * intensity, 0, 255)
+        modified = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+    elif condition == "cloudy":
+        modified = cv2.convertScaleAbs(shirt_region, alpha=0.95 * intensity, beta=-10)
+        overlay = np.full(shirt_region.shape, (130, 130, 150), dtype=np.uint8)
+        modified = cv2.addWeighted(modified, 0.85, overlay, 0.15, 0)
+
+    elif condition == "rainy":
+        modified = cv2.GaussianBlur(shirt_region, (5, 5), 1)
+        wet_effect = cv2.addWeighted(modified, 0.9, np.full(shirt_region.shape, 30, dtype=np.uint8), 0.1, 0)
+        reflection = cv2.GaussianBlur(wet_effect, (7, 7), 2)
+        modified = cv2.addWeighted(wet_effect, 0.92, reflection, 0.08, 0)
+        
+    elif condition == "bright":
+        modified = cv2.convertScaleAbs(shirt_region, alpha=0.7 * 1.7, beta=20)
+        modified = cv2.GaussianBlur(modified, (3, 3), 0)
+
+    elif condition == "dim":
+        modified = cv2.convertScaleAbs(shirt_region, alpha=1 * intensity, beta=-2)
+        dark_overlay = np.full(shirt_region.shape, (20, 20, 20), dtype=np.uint8)
+        modified = cv2.addWeighted(modified, 0.8, dark_overlay, 0.2, 0)
+
+    elif condition == "warm":
+        warm_overlay = np.full(shirt_region.shape, (0, 50, 100), dtype=np.uint8)
+        modified = cv2.addWeighted(shirt_region, 0.8, warm_overlay, 0.5, 0)
+
+
+    elif condition == "night":
+        modified = cv2.convertScaleAbs(shirt_region, alpha=0.9 * intensity, beta=-40)
+        overlay = np.full(shirt_region.shape, (40, 40, 100), dtype=np.uint8)
+        modified = cv2.addWeighted(modified, 0.85, overlay, 0.15, 0)
+
+        center = (w // 2, h // 2)
+        radius = max(w, h) // 4
+        light_effect = np.zeros_like(shirt_region, dtype=np.uint8)
+        cv2.circle(light_effect, center, radius, (40, 40, 120), -1)
+        light_effect = cv2.GaussianBlur(light_effect, (61, 61), 30)
+        modified = cv2.addWeighted(modified, 0.92, light_effect, 0.08, 0)
+
+    blurred_mask = cv2.GaussianBlur(mask, (9, 9), 3)
+    blurred_mask = blurred_mask.astype(float) / 255.0
+    blurred_mask = cv2.merge([blurred_mask] * 3)
+
+    modified = modified.astype(float)
+    shirt_region = shirt_region.astype(float)
+    smooth_blend = modified * blurred_mask + shirt_region * (1 - blurred_mask)
+    smooth_blend = np.clip(smooth_blend, 0, 255).astype(np.uint8)
+
+    modified_masked = cv2.bitwise_and(smooth_blend, smooth_blend, mask=mask)
+    background = cv2.bitwise_and(image, image, mask=cv2.bitwise_not(mask))
+    final_image = cv2.add(background, modified_masked)
+
+    return final_image
+    
+
+@app.post("/adjust_lighting")
+async def adjust_lighting(file: UploadFile = File(...), lighting_type: str = "sunny"):
+    try:
+        # Read the uploaded file into a NumPy array
+        file_bytes = await file.read()
+        np_arr = np.frombuffer(file_bytes, np.uint8)
+        image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        if image is None:
+            raise HTTPException(status_code=400, detail="Invalid image")
+
+        # Generate the cloth mask
+        mask = generate_cloth_mask(image)
+
+        # Optional: Invert if needed (based on brightness)
+        if np.mean(image[mask == 255]) > np.mean(image[mask == 0]):
+            mask = cv2.bitwise_not(mask)
+
+        # Apply the lighting effect
+        result = apply_effect_on_shirt(image, mask, lighting_type.lower(), intensity=1.0)
+
+        # Encode the result to JPEG
+        _, buffer = cv2.imencode('.jpg', result)
+        return StreamingResponse(io.BytesIO(buffer.tobytes()), media_type="image/jpeg")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+
+
 

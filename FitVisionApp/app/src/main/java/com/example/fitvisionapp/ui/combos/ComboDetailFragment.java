@@ -63,7 +63,7 @@ public class ComboDetailFragment extends Fragment {
 
         // Initialize API
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/")  // Change if backend is hosted online
+                .baseUrl("http://192.168.1.10:8000/")  // Change if backend is hosted online
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
